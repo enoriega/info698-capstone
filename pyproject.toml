@@ -1,0 +1,7 @@
+[project]
+name = "info698-capstone"
+version = "0.1.0"
+description = "Agent Based RAG system over PMC"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []

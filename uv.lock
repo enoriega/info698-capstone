@@ -422,6 +422,7 @@ dependencies = [
     { name = "langchain-community" },
     { name = "langchain-openai" },
     { name = "openai" },
+    { name = "python-dotenv" },
     { name = "streamlit" },
 ]
 
@@ -431,6 +432,7 @@ requires-dist = [
     { name = "langchain-community", specifier = ">=0.3.19" },
     { name = "langchain-openai", specifier = ">=0.3.8" },
     { name = "openai", specifier = ">=1.66.3" },
+    { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "streamlit", specifier = ">=1.42.2" },
 ]
 

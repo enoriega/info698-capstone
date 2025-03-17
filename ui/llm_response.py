@@ -1,5 +1,10 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+LLM_APIKEY = os.getenv("LLM_APIKEY")
 
 def get_llm_response(user_input: str) -> str:
     """
@@ -14,7 +19,7 @@ def get_llm_response(user_input: str) -> str:
     # Initialize the ChatOpenAI client
     chat = ChatOpenAI(
         model="Llama-3.2-11B-Vision-Instruct",
-        openai_api_key="sk-OMIAMjsYE-00DdubObVWLg",
+        openai_api_key=LLM_APIKEY,
         openai_api_base="https://llm-api.cyverse.ai/v1"
     )
 

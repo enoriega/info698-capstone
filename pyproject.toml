@@ -9,5 +9,6 @@ dependencies = [
     "langchain-community>=0.3.19",
     "langchain-openai>=0.3.8",
     "openai>=1.66.3",
+    "python-dotenv>=1.0.1",
     "streamlit>=1.42.2",
 ]

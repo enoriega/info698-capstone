@@ -1,4 +1,5 @@
 import streamlit as st
+from llm_response import get_llm_response
 
 def main():
     # Set page title and configure layout
@@ -25,10 +26,11 @@ def main():
         with st.chat_message("user"):
             st.markdown(prompt)
 
-        # Echo back the user's input as the bot response
+        # Get response from LLM
         with st.chat_message("assistant"):
-            response = prompt  # Simply echo back the input
-            st.markdown(response)
+            with st.spinner("Thinking..."):
+                response = get_llm_response(prompt)
+                st.markdown(response)
 
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})

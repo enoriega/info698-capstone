@@ -15,7 +15,7 @@ LLM_API_BASE = os.getenv("LLM_API_BASE", "https://llm-api.cyverse.ai/v1")
 
 def create_llama_chat_model():
     return ChatOpenAI(
-        model="Llama-3.2-11B-Vision-Instruct",
+        model="Qwen2.5-Coder-32B-Instruct",
         openai_api_key=LLM_APIKEY,
         openai_api_base=LLM_API_BASE,
     )

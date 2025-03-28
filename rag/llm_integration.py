@@ -15,7 +15,7 @@ LLM_API_BASE = os.getenv("LLM_API_BASE", "https://llm-api.cyverse.ai/v1")
 
 def create_llama_chat_model():
     return ChatOpenAI(
-        model="Qwen2.5-Coder-32B-Instruct",
+        model="Llama-3.2-11B-Vision-Instruct",
         openai_api_key=LLM_APIKEY,
         openai_api_base=LLM_API_BASE,
     )
@@ -78,7 +78,7 @@ def create_query_transformer(llm):
     query_prompt = create_standalone_query_prompt()
     return query_prompt | llm | StrOutputParser()
 
-
+# Depreciated Remove this function as it is not used in the main application. This used Query Translation.
 def create_rag_chain(retriever, llm):
     # Create the retrieval prompt
     prompt = create_retrieval_prompt()

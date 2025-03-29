@@ -68,13 +68,21 @@ def main():
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         display_message({"role": "user", "content": user_input})
         
-        # Get assistant response
-        with st.spinner("Thinking..."):
-            response = get_llm_response(user_input, st.session_state.chat_history[:-1])
+        # Create a message container for the assistant's response
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            full_response = ""
+            
+            # Stream the response
+            for response_chunk in get_llm_response(user_input, st.session_state.chat_history[:-1]):
+                full_response += response_chunk
+                message_placeholder.markdown(full_response + "▌")
+            
+            # Display final response without cursor
+            message_placeholder.markdown(full_response)
         
         # Add assistant response to chat history
-        st.session_state.chat_history.append({"role": "assistant", "content": response})
-        display_message({"role": "assistant", "content": response})
+        st.session_state.chat_history.append({"role": "assistant", "content": full_response})
         
         # Save updated chat history
         save_chat_history(st.session_state.chat_history)

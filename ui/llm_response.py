@@ -45,19 +45,20 @@ def format_chat_history(messages: List[Dict[str, str]]) -> List:
     
     return formatted_messages
 
-def get_llm_response(user_input: str, chat_history: List[Dict[str, str]] = None) -> str:
+def get_llm_response(user_input: str, chat_history: List[Dict[str, str]] = None):
     """
-    Get response from the LLM model using chat history for context.
+    Get streaming response from the LLM model using chat history for context.
     
     Args:
         user_input (str): Current user message
         chat_history (List[Dict]): Previous messages
         
-    Returns:
-        str: LLM response
+    Yields:
+        str: Tokens from the LLM response as they arrive
     """
     try:
         chat = create_chat_client()
+        chat.streaming = True
         
         # Initialize messages with system message if no history
         if chat_history is None:
@@ -67,10 +68,11 @@ def get_llm_response(user_input: str, chat_history: List[Dict[str, str]] = None)
         messages = format_chat_history(chat_history)
         messages.append(HumanMessage(content=user_input))
         
-        # Get response from LLM
-        response = chat.invoke(messages)
-        return response.content
-        
+        # Get streaming response from LLM
+        for chunk in chat.stream(messages):
+            if chunk.content is not None:
+                yield chunk.content
+                
     except Exception as e:
         error_msg = f"An error occurred: {str(e)}"
-        return error_msg
+        yield error_msg

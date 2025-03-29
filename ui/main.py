@@ -42,6 +42,7 @@ def main():
         layout="wide",
         initial_sidebar_state="expanded"
     )
+    
     st.title("PubMed Chatbot")
     
     # Initialize session
@@ -54,28 +55,29 @@ def main():
             save_chat_history([])
             st.rerun()
     
-    # Create a container for chat history
-    chat_container = st.container()
+    # Display all messages in the chat container
+    for message in st.session_state.chat_history:
+        display_message(message)
     
     # Handle user input
-    if user_input := st.chat_input("What would you like to know?"):
+    user_input = st.chat_input("What would you like to know?")
+    
+    # Process new input if available
+    if user_input:
         # Add user message to chat history
         st.session_state.chat_history.append({"role": "user", "content": user_input})
+        display_message({"role": "user", "content": user_input})
         
         # Get assistant response
         with st.spinner("Thinking..."):
             response = get_llm_response(user_input, st.session_state.chat_history[:-1])
-            
+        
         # Add assistant response to chat history
         st.session_state.chat_history.append({"role": "assistant", "content": response})
+        display_message({"role": "assistant", "content": response})
         
-        # Save updated chat history to file
+        # Save updated chat history
         save_chat_history(st.session_state.chat_history)
-    
-    # Display all messages in the chat container
-    with chat_container:
-        for message in st.session_state.chat_history:
-            display_message(message)
 
 if __name__ == "__main__":
     main()

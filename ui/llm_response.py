@@ -14,7 +14,7 @@ LLM_APIKEY = os.getenv("LLM_APIKEY")
 def create_chat_client():
     """Create and return a ChatOpenAI client."""
     return ChatOpenAI(
-        model="Llama-3.2-11B-Vision-Instruct",
+        model="Qwen2.5-Coder-32B-Instruct",
         openai_api_key=LLM_APIKEY,
         openai_api_base="https://llm-api.cyverse.ai/v1"
     )

@@ -7,16 +7,21 @@ import logging
 from langchain.tools.retriever import create_retriever_tool
 from rag.rag_pipeline import PubMedRAG
 
-# Configure logging - only essential logs
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
+# Setting the threshold of logger to DEBUG
+logger.setLevel(logging.INFO)
 
+logger.warning("Warning Logger  from LLM response")
+logger.error("Error Logger from LLM response")
+logger.debug("DEBUG Logger from LLM response")
+logger.info("INFO Logger from LLM response")
 # Load environment variables
 load_dotenv()
 
 # Global RAG pipeline instance
 _rag_instance = None
+
 
 def get_rag_instance(supabase_client: Client) -> PubMedRAG:
     global _rag_instance
@@ -56,22 +61,21 @@ def format_chat_history(messages: List[Dict[str, str]]) -> List:
 # RAG instance is sent as a parameter to this function, such that RAG is initialized only once.
 def get_llm_response(
     user_input: str, rag_instance: PubMedRAG, chat_history: List[Dict[str, str]] = None
-) -> str:
+):
     try:
         logger.debug("Processing user input for LLM response")
         # Initialize chat history if needed
         if chat_history is None:
             chat_history = []
 
-        response = rag_instance.query(user_input)
+        for chunk in rag_instance.query_stream(user_input):
+            yield chunk
 
         # Check
         # formatted_messages = format_chat_history(chat_history)
         # formatted_messages.append(HumanMessage(content=user_input))
         # formatted_messages.append(AIMessage(content=response))
-        return response
 
     except Exception as e:
         logger.error(f"Error in get_llm_response: {str(e)}", exc_info=True)
-        error_msg = f"An error occurred: {str(e)}"
-        return error_msg
+        yield f"Error generating response: {str(e)}"

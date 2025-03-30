@@ -4,12 +4,22 @@ import os
 import logging
 
 # Configure logging - simplified
-logging.basicConfig(
-    level=logging.INFO,  # Change to INFO level
-    format="%(asctime)s - %(message)s",
-    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()],
-)
-logger = logging.getLogger(__name__)
+logging.basicConfig(filename="PubMedRagMain.log",
+                    format='%(asctime)s %(message)s',
+                    filemode='w')
+
+
+# Creating an object
+logger = logging.getLogger()
+
+# Setting the threshold of logger to DEBUG
+logger.setLevel(logging.INFO)
+
+logger.warning("Warning Logger")
+logger.error("Error Logger")
+logger.debug("DEBUG Logger")
+logger.info("INFO Logger")
+
 
 from data_loader.data_loader import (
     load_pubmed_data,
@@ -194,14 +204,21 @@ def main():
         # Takes the RAG instance
         ## TODO: Enhancement : Add text Streaming
         with st.spinner("Researching PubMed articles..."):
-            response = get_llm_response(
+            response_content = ""
+            response_placeholder = st.empty() 
+            for chunk in get_llm_response(
                 user_input,
                 st.session_state.rag_instance,
                 st.session_state.chat_history[:-1],
-            )
+                ):
+                
+                if chunk:  
+                    response_content += str(chunk)
+                    formatted_content = response_content.replace('\n', '\n\n')
+                    response_placeholder.markdown(formatted_content)
 
         # Add assistant response to chat history
-        st.session_state.chat_history.append({"role": "assistant", "content": response})
+        st.session_state.chat_history.append({"role": "assistant", "content": response_content})
 
         # Save updated chat history to file
         save_chat_history(st.session_state.chat_history)
@@ -214,3 +231,12 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+# SAMPLE QUESTIONS FOR TESTING:
+# # What was the main objective of the study comparing lorazepam and pentobarbital? - giving Answer
+# # Which drug provided greater sedation and antianxiety effects?
+# # What were the dosages of lorazepam and pentobarbital used in the study?
+
+#"What is required for the induction of tyrosine aminotransferase by Bt2cAMP in HTC hepatoma cells?" - Max Recursion reched
+# "How does dexamethasone influence the effect of Bt2cAMP on tyrosine aminotransferase synthesis?"
+# "What evidence suggests that dexamethasone acts beyond the activation of protein kinase by cAMP?"

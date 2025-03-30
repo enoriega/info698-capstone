@@ -14,10 +14,18 @@ from sentence_transformers import SentenceTransformer
 from langchain_community.vectorstores import SupabaseVectorStore
 from typing import Optional
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
-logger = logging.getLogger(__name__)
+RECURSION_LIMIT = 100
 
+# Creating an object
+logger = logging.getLogger()
+
+# Setting the threshold of logger to DEBUG
+logger.setLevel(logging.INFO)
+
+logger.warning("Warning Logger  from Rag Pipeline")
+logger.error("Error Logger from Rag Pipeline")
+logger.debug("DEBUG Logger from Rag Pipeline")
+logger.info("INFO Logger from Rag Pipeline")
 # Global instance
 supabase_vs_retriever = None
 
@@ -60,17 +68,17 @@ class PubMedRAG:
             table_name="pubmed_documents",
             query_name="match_documents",
         )
-        supabase_vs_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+        supabase_vs_retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
 
         retriever = MyRetriever()
 
         retrieval_tool = create_retriever_tool(
             retriever=retriever,
-            name="my_retriever",
+            name="pubmed_retriever",  
             description="A tool to retrieve documents from my knowledge base created from PubMedCentral Database.",
         )
         logger.debug("Initializing RAG pipeline")
-        system_message = "You are a medical research assistant with expertise in analyzing PubMed papers. Use the following pieces of context from research papers to answer the user's question. If you don't know the answer, just say you don't know. Don't try to make up an answer But help the user with the information that you got from the retrieval"
+        system_message = "You are a medical research assistant with expertise in analyzing PubMed papers. Use the following pieces of context from research papers to answer the user's question. "
 
         wiki_retriever = create_retriever_tool(
             retriever=WikipediaRetriever(),
@@ -106,3 +114,79 @@ class PubMedRAG:
         except Exception as e:
             logger.error(f"3.E2 Error in RAG query: {str(e)}", exc_info=True)
             return f"Error generating response: {str(e)}"
+        
+    def process_chunks(self, chunk):
+        """
+        Processes a chunk from the agent and returns formatted output strings
+        with enhanced markdown formatting for better readability.
+        """
+        outputs = []
+
+        if "agent" in chunk:
+            for message in chunk["agent"]["messages"]:
+                if "tool_calls" in message.additional_kwargs:
+                    tool_calls = message.additional_kwargs["tool_calls"]
+
+                    for tool_call in tool_calls:
+                        tool_name = tool_call["function"]["name"]
+                        tool_arguments = eval(tool_call["function"]["arguments"])
+                        tool_query = tool_arguments["query"]
+
+                        # Enhanced markdown formatting for tool calls
+                        tool_call_msg = (
+                            f"\n\n> 🔍 **Research in Progress**\n\n"
+                            f"Searching through literature using `{tool_name}`\n\n"
+                            f"**Query**: {tool_query}\n\n"
+                            f"---"  # Horizontal line for visual separation
+                        )
+                        outputs.append(tool_call_msg)
+
+                else:
+                    agent_answer = message.content
+                    if agent_answer:  # Only append if there's content
+                        # Enhanced markdown formatting for agent responses
+                        formatted_answer = (
+                            f"\n\n### Research Findings\n\n"
+                            f"{agent_answer}\n\n"
+                            f"---\n\n"  # Horizontal line for visual separation
+                        )
+                        outputs.append(formatted_answer)
+
+        # Join all outputs with double newlines for better spacing
+        return "\n\n".join(outputs) if outputs else None
+                    
+    def query_stream(self, question: str):
+        logger.debug(f"Streaming RAG query: {question[:50]}...")
+
+        if not self.rag_chain:
+            raise ValueError("RAG chain not initialized. Call initialize() first.")
+
+        try:
+            # First collect all information without streaming
+            for chunk in self.rag_chain.stream(
+                {"messages": [("human", question)]},
+                {"recursion_limit": RECURSION_LIMIT}
+            ):
+                # Process each chunk and yield formatted outputs
+                formatted_outputs = self.process_chunks(chunk)
+                if formatted_outputs:  # Only yield if there's something to yield
+                    yield f"{formatted_outputs}\n\n"
+            
+            # # Check if reached max iterations and summarize
+            # collected_info = self.extract_messages_from_agent_result(agent_result)
+            # print(f"Collected information: {collected_info}")
+            # summarization_prompt = f"""
+            # Based on the following information collected about the query: "{question}"
+            
+            # {collected_info}
+            
+            # Please provide a concise and accurate summary that directly answers the user's question.
+            # """
+            
+            # # Stream the summarization
+            # for chunk in self.llm.stream(summarization_prompt):
+            #     yield chunk.content
+                
+        except Exception as e:
+            logger.error(f"Error in RAG query stream: {str(e)}", exc_info=True)
+            yield f"Error generating response: {str(e)}"

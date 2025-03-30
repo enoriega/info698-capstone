@@ -169,3 +169,14 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Ignore vscode settings
+.vscode/
+
+# ignore chat history
+chat_history.json
+
+myenv/
+chroma_db/
+embedding_model/
+embedding_model/

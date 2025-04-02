@@ -33,10 +33,21 @@ vectorstore_as_retriever = None
 db_client_global = None
 
 
-def get_embedding_model(self):
-    return SentenceTransformer("pritamdeka/S-PubMedBERT-MS-MARCO")
+def get_embedding_model(model_name="pritamdeka/S-PubMedBERT-MS-MARCO"):
+    """
+    Load embedding model for vector search.
 
+    Args:
+        model_name (str): Name of the SentenceTransformer model
 
+    Returns:
+        SentenceTransformer: Loaded embedding model
+    """
+    try:
+        return SentenceTransformer(model_name)
+    except Exception as e:
+        logger.error(f"Failed to load embedding model: {e}")
+        raise
 class MyRetriever(BaseRetriever):
     def _get_relevant_documents(self, query: str) -> list[Document]:
         coll = db_client_global.collections.get("PubMedArticle")
@@ -88,7 +99,7 @@ class PubMedRAG:
             description="A tool to retrieve documents from my knowledge base created from PubMedCentral Database.",
         )
         logger.debug("Initializing RAG pipeline")
-        system_message = "You are a medical research assistant with expertise in analyzing PubMed papers."
+        system_message = "You are a assistant with expertise in analyzing PubMed papers. You have been given a pubmed_retriever tool, which gets the relevant document from the vector database. Your task is to provide answers to user queries according to the documents found in the vector database. You also have access to wikipedia_retriever tool which you can use to get understanding beyond the pubmed_retriever. Dont utilize the full recursion limit, in 5-10 retrievals, summarize your findings."
 
         wiki_retriever = create_retriever_tool(
             retriever=WikipediaRetriever(),
@@ -103,7 +114,7 @@ class PubMedRAG:
         if self.rag_chain is None:
             self.rag_chain = create_react_agent(
                 model=self.llm,
-                tools=[retrieval_tool],
+                tools=[retrieval_tool, wiki_retriever],
                 prompt=system_message,
             )
             logger.debug("RAG pipeline initialization complete")

@@ -2,12 +2,19 @@ import streamlit as st
 import json
 import os
 import logging
+from data_loader.data_loader import (
+    load_pubmed_data,
+)
+import atexit
+from langchain.schema import Document
+from sentence_transformers import SentenceTransformer
+from ui.llm_response import get_llm_response, get_rag_instance
+from weaviate_db.client import connect_to_weaviate, close_weaviate_client
 
 # Configure logging - simplified
-logging.basicConfig(filename="PubMedRagMain.log",
-                    format='%(asctime)s %(message)s',
-                    filemode='w')
-
+logging.basicConfig(
+    filename="PubMedRagMain.log", format="%(asctime)s %(message)s", filemode="w"
+)
 
 # Creating an object
 logger = logging.getLogger()
@@ -19,16 +26,6 @@ logger.warning("Warning Logger")
 logger.error("Error Logger")
 logger.debug("DEBUG Logger")
 logger.info("INFO Logger")
-
-
-from data_loader.data_loader import (
-    load_pubmed_data,
-)
-from supabase import create_client, Client
-from langchain.schema import Document
-from sentence_transformers import SentenceTransformer
-
-from ui.llm_response import get_llm_response, get_rag_instance
 
 # Define the path for storing chat history
 CHAT_HISTORY_FILE = "chat_history.json"
@@ -75,45 +72,9 @@ def initialize_session():
     if "rag_instance" not in st.session_state:
         logger.debug("Setting RAG instance to None initially")
         st.session_state.rag_instance = None
-    if "supabase_client" not in st.session_state:
-        supabase_url = os.environ.get("SUPABASE_URL")
-        supabase_key = os.environ.get("SUPABASE_KEY")
-        logger.debug("Supabase create client")
-        st.session_state.supabase_client = create_client(supabase_url, supabase_key)
-
-
-def create_new_vector_store(
-    supabase_instance, start_idx: int = 500, num_samples: int = 100
-):
-    try:
-        documents = load_pubmed_data(start_idx, num_samples)
-
-        # Add a check out of all documents which have PMID value.
-        for doc in documents:
-            if not doc.get("PMID"):
-                print(f"Document with ID {doc['id']} does not have a PMID value.")
-                continue
-
-        model = SentenceTransformer("all-MiniLM-L6-v2")
-        texts = [doc["content"] for doc in documents]
-        embeddings = model.encode(texts).tolist()
-        data = []
-        for doc, embedding in zip(documents, embeddings):
-            record = {
-                "title": doc["title"],
-                "pmid": str(doc["PMID"]),
-                "content": doc["content"],
-                "metadata": {"original_id": doc["id"], "contents": doc["contents"]},
-                "embedding": embedding,
-            }
-            data.append(record)
-
-        # Insert data into Supabase table
-        result = supabase_instance.table("pubmed_documents").insert(data).execute()
-        print(f"Inserted document with title: {['title']}")
-
-    except Exception as e:
-        print(f"Error inserting chunk: {e}")
+    if "db_client" not in st.session_state:
+        db_client = connect_to_weaviate()
+        st.session_state.db_client = db_client
 
 
 def main():
@@ -134,10 +95,10 @@ def main():
 
     # Initialize RAG instance once
     # Second hero function here, which initializes the RAG instance.
-    supabase_instance = st.session_state.supabase_client
+    db_instance = st.session_state.db_client
     if st.session_state.rag_instance is None:
         logger.debug("Getting RAG instance for the first time")
-        st.session_state.rag_instance = get_rag_instance(supabase_instance)
+        st.session_state.rag_instance = get_rag_instance(db_instance)
         if st.session_state.rag_instance:
             st.session_state.rag_initialized = True
     else:
@@ -168,7 +129,7 @@ def main():
                     # This will create the vectorstore if it doesn't exist
                     ## TODO : Add return value for get_rag_instance() better logging,
                     ## Also initialze the rag_initialized session state accordingly.
-                    rag_instance = get_rag_instance(supabase_instance)
+                    rag_instance = get_rag_instance(db_instance)
                     if rag_instance:
                         st.session_state.rag_initialized = True
                         st.success("RAG system initialized successfully!")
@@ -176,17 +137,6 @@ def main():
                     st.error(f"Error initializing RAG system: {str(e)}")
         else:
             st.success("RAG system ready!")
-
-        # TODO : There is a bug ig I uncomment it.
-        # if st.button("Force Vector Store Creation for test data"):
-        #     with st.spinner("Force Vector Store Creation, Downloading test data, Creating Embeddings, Storing to Supabase..."):
-        #         try:
-        #             # Force creation of embeddings and storage in Supabase
-        #             # This is a placeholder for the actual implementation
-
-        #             create_new_vector_store(supabase_instance)
-        #         except Exception as e:
-        #             st.error(f"Error rebuilding RAG index: {str(e)}")
 
     # Create a container for chat history
     chat_container = st.container()
@@ -205,20 +155,22 @@ def main():
         ## TODO: Enhancement : Add text Streaming
         with st.spinner("Researching PubMed articles..."):
             response_content = ""
-            response_placeholder = st.empty() 
+            response_placeholder = st.empty()
             for chunk in get_llm_response(
                 user_input,
                 st.session_state.rag_instance,
                 st.session_state.chat_history[:-1],
-                ):
-                
-                if chunk:  
+            ):
+
+                if chunk:
                     response_content += str(chunk)
-                    formatted_content = response_content.replace('\n', '\n\n')
+                    formatted_content = response_content.replace("\n", "\n\n")
                     response_placeholder.markdown(formatted_content)
 
         # Add assistant response to chat history
-        st.session_state.chat_history.append({"role": "assistant", "content": response_content})
+        st.session_state.chat_history.append(
+            {"role": "assistant", "content": response_content}
+        )
 
         # Save updated chat history to file
         save_chat_history(st.session_state.chat_history)
@@ -228,15 +180,17 @@ def main():
         for message in st.session_state.chat_history:
             display_message(message)
 
+    atexit.register(close_weaviate_client, st.session_state.db_client)
+
 
 if __name__ == "__main__":
     main()
-    
+
 # SAMPLE QUESTIONS FOR TESTING:
 # # What was the main objective of the study comparing lorazepam and pentobarbital? - giving Answer
 # # Which drug provided greater sedation and antianxiety effects?
 # # What were the dosages of lorazepam and pentobarbital used in the study?
 
-#"What is required for the induction of tyrosine aminotransferase by Bt2cAMP in HTC hepatoma cells?" - Max Recursion reched
+# "What is required for the induction of tyrosine aminotransferase by Bt2cAMP in HTC hepatoma cells?" - Max Recursion reched
 # "How does dexamethasone influence the effect of Bt2cAMP on tyrosine aminotransferase synthesis?"
 # "What evidence suggests that dexamethasone acts beyond the activation of protein kinase by cAMP?"

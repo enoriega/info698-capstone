@@ -23,14 +23,14 @@ load_dotenv()
 _rag_instance = None
 
 
-def get_rag_instance(supabase_client: Client) -> PubMedRAG:
+def get_rag_instance(db_client) -> PubMedRAG:
     global _rag_instance
 
     if _rag_instance is None:
         logger.debug("Initializing new RAG instance")
 
         ## TODO: Remove this is only for testing, Initialize the supabase client. only once and pass the retriver for langchain RAG.
-        _rag_instance = PubMedRAG(supabase_client)
+        _rag_instance = PubMedRAG(db_client)
         _rag_instance.initialize()
 
     return _rag_instance

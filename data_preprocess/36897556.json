@@ -1,0 +1,348 @@
+{
+  "document_id": "36897556",
+  "file_path": "C:\\Users\\UAL-LAPTOP\\Downloads\\New folder (2)\\fiona_xmls\\xml\\PMC10000342.nxml",
+  "metadata": {
+    "processing_date": "2025-04-01T01:06:39.267861",
+    "pmid": "36897556",
+    "pmc": "10000342",
+    "doi": "10.1007/s40121-023-00785-2",
+    "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+    "article_type": null,
+    "journal": "Infectious Diseases and Therapy",
+    "issn": "2193-8229",
+    "volume": "12",
+    "issue": "4",
+    "publication_date": "2023-3-10",
+    "authors": [
+      {
+        "name": "Brestrich, Gordon"
+      },
+      {
+        "name": "Angulo, Frederick J."
+      },
+      {
+        "name": "Berger, Fabian K."
+      },
+      {
+        "name": "Brösamle, Christian"
+      },
+      {
+        "name": "Hagel, Stefan"
+      },
+      {
+        "name": "Leischker, Andreas"
+      },
+      {
+        "name": "Lübbert, Christoph"
+      },
+      {
+        "name": "Maechler, Friederike"
+      },
+      {
+        "name": "Merbecks, Sophie-Susann"
+      },
+      {
+        "name": "Minarovic, Nadia"
+      },
+      {
+        "name": "Moïsi, Jennifer C."
+      },
+      {
+        "name": "von Müller, Lutz"
+      },
+      {
+        "name": "Reuken, Phillip A."
+      },
+      {
+        "name": "Weinke, Thomas"
+      },
+      {
+        "name": "Yu, Holly"
+      },
+      {
+        "name": "Mellmann, Alexander"
+      }
+    ],
+    "keywords": [
+      "Burden of disease",
+      "Clostridioides difficile",
+      "Germany",
+      "Hospital",
+      "Incidence",
+      "Surveillance"
+    ],
+    "sections": [
+      "Introduction",
+      "Methods",
+      "Results",
+      "Conclusions",
+      "Key Summary Points",
+      "Introduction",
+      "Methods",
+      "Data Sources",
+      "CDI Diagnosis in Germany",
+      "Robert Koch-Institute (RKI)",
+      "Landesuntersuchungsanstalt (LUA) Saxony",
+      "Clostridioides Difficile-Associated Disease Krankenhaus-Infektions-Surveillance-System (CDAD-KISS)",
+      "Gesundheitsberichterstattung des Bundes (GBE-Bund)",
+      "Emerging Infections Program (EIP)",
+      "Data Evaluation",
+      "RKI",
+      "LUA",
+      "CDAD-KISS",
+      "GBE-Bund",
+      "EIP",
+      "Results",
+      "CDI Case Numbers and Incidences",
+      "Recurrence and Severity",
+      "Mortality",
+      "Hospital Burden",
+      "Comparison to US CDI Incidence",
+      "Discussion",
+      "Conclusions",
+      "Funding",
+      "Medical Writing",
+      "Author Contributions",
+      "Disclosures",
+      "Compliance with Ethics Guidelines",
+      "Data Availability"
+    ]
+  },
+  "chunks": [
+    {
+      "chunk_id": "36897556-0",
+      "section": "Abstract - Results",
+      "text": "ResultsAll four databases reported comparable incidences and trends. Beginning in 2010, population-based hospitalised CDI incidence increased to a peak of > 137/100,000 in 2013. Then, incidence declined to 81/100,000 in 2019. Hospitalised patients with CDI were predominantly > 50 years of age. The population-based incidence of severe CDI was between 1.4 and 8.4/100,000 per year. Recurrence rates were between 5.9 to 6.5%. More than 1,000 CDI deaths occurred each year, with a peak of 2,666 deaths in 2015. Cumulative CDI patient days (PD) were between 204,596 and 355,466 each year, which exceeded cumulated PD for influenza and herpes zoster in most years, though year-to-year differences were observed. Finally, hospitalized CDI incidence was higher in Germany than in the US, where the disease is well recognized as a public health threat.",
+      "token_count": 130,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-1",
+      "section": "Key Summary Points",
+      "text": "Why carry out the study?CDI poses a significant health risk globally. CDI surveillance at national and regional level is a powerful tool to improve the understanding of CDI epidemiology and to support disease prevention and control.In Germany, four public surveillance systems publish their results independently utilizing different methodologies.What was learned from the study?This is the first analysis providing a comprehensive overview of data from these sources and describing the CDI burden on a national level over a 10-year period.The four systems yielded similar population-based incidences and trends over time, indirectly confirming their validity.The documented burden of CDI on the German healthcare system is large, with high numbers of hospitalizations, severe cases, recurrences, and deaths.No public surveillance for community-treated CDI exists in Germany, and it is likely that CDI in Germany is still underreported.",
+      "token_count": 133,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-2",
+      "section": "Introduction",
+      "text": "Clostridioides difficile (formerly Clostridium difficile, C. difficile) is a ubiquitous, anaerobic, Gram-positive spore-forming bacterium. About 5–10% of healthy persons are C. difficile carriers, but, under certain conditions, toxigenic strains can lead to C. difficile infection (CDI). Two clostridial toxins primarily mediate pathogenicity: toxin A and toxin B . Of note, some strains such as ribotype 027 (RT027) may express an additional toxin (CDT, binary toxin, gene: cdtAB) which may lead to more severe courses of disease. RT027 has also been the cause for rising CDI incidence in several countries, including Germany . Multidrug resistance in RT027 and other nosocomial strains is common, and might have facilitated its spread . In contrast, between 2015 and 2017, new guidelines for infection prevention and hygiene in the hospital setting have been implemented in Germany and new treatment options became available. These measures can cause a reduction of CDI incidence [4–7].Clinical symptoms of CDI range from mild, self-limiting diarrhoea to fulminant colitis, and can include pseudomembranous colitis, toxic megacolon, bowel perforation, sepsis, and multiple organ dysfunction syndrome . Known risk factors for CDI include antibiotic exposure, previous hospitalisation, defined underlying diseases, and advanced age . In developed countries, C. difficile is considered the main infectious cause of antibiotic-associated diarrhoea .CDI poses a significant health risk for vulnerable populations and is of particular concern to healthcare providers due to severe disease outcomes, frequent recurrence, high mortality, and associated financial impact on the healthcare system. CDI surveillance at national and regional level is therefore required to improve our understanding of CDI epidemiology and to support efficient allocation of healthcare resources for disease prevention and control .In Germany, three different nation- or statewide public surveillance systems and one database provide information on hospitalised CDI cases (Table 1). These individual surveillance systems publish their results separately, and, until today, no comparisons between them are available. In this analysis, data from these sources are compared and discussed to provide physicians and healthcare decision-makers with a comprehensive overview of the overall burden of CDI in German hospitals.",
+      "token_count": 337,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-3",
+      "section": "Introduction",
+      "text": "To our knowledge, this is the first study describing the burden of CDI on a nationwide level in Germany.Table 1Public sources for information on CDI in GermanyRobert Koch Institute (RKI)Saxon State Health and Veterinary Research Institute (LUA)National Reference Center of Nosocomial Infections (CDAD-KISS)Federal Health Monitoring (GBE-Bund)CDI surveillance systems Geographic coverageNationwideFederal state of SaxonyPartial surveillanceNationwide Who reportsAttending physicianAttending physicianDedicated infection control staff at participating hospitalsaCoding staff at participating hospitalsb ReportingMandatory: Hospitalised CDI cases with severe course of diseaseMandatory: All symptomatic CDI cases in SaxonyVoluntary: All hospitalised CDI casesAdministrative data of hospitalised CDI cases at hospital discharge: CDI diagnoses (based on ICD-10 coding) CDI case definitionClinical- and laboratory-confirmedClinical- and laboratory-confirmedClinical- and/or laboratory-confirmedClinical- and/or laboratory-confirmed Surveillance data: Public accessContinually updated data available via online database SurvStat@RKI  and published in annual reports Annual reports published on LUA homepage Annual reports published on CDAD-KISS homepage Main diagnoses available via online database, secondary diagnoses on request  Reported incidencePopulation-based severe hospitalised CDI incidencePopulation-based hospitalised CDI incidenceCDI admission rateHospitalised CDI main and secondary diagnosesCDAD-KISS Hospital Infection Surveillance System; CDI Clostridioides difficile infection; GBE-Bund Information System of the Federal Health Monitoring; LUA Saxon State Health and Veterinary Research Institute Saxony; RKI Robert Koch-Institutea572 hospitals out of 1.914 in 2019 b > 1.400 hospitals out of 1.914 in 2019 [21, 22]Overall hospitalizations, population-based incidences, disease severity, recurrence rates and mortalities are described over a period of 10 years. In addition, CDI burden is compared to those of herpes zoster and influenza, two other infectious diseases that have a high prevalence in the elderly population. To put the German burden into a global perspective, it is compared to data from the Emerging Infections Program (EIP) of the United States Centers for Disease Control and Prevention (CDC); C. difficile has been classified as an urgent public health threat in the United States (US) .",
+      "token_count": 302,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-4",
+      "section": "Methods",
+      "text": "Data SourcesNo ethical approval was required for this study as data were extracted from public sources. Its collection was conducted as part of the routine surveillance and health data monitoring in accordance with German and European law and regulations. All public databases were queried during June/July 2021 for the period from 2010 to 2019. Data from the CDC EIP were available only from 2012 to 2019. The COVID-19 pandemic and associated public health interventions led to a dramatic decrease in the number of reported cases for most infectious diseases in Germany in and after 2020. Regarding CDI, the difference between expected and reported case numbers was over 30% and it remains unclear to what degree this reduction reflects a true decline or is the result of fewer diagnoses due to social distancing and inadequate reporting . To obtain a representative evaluation, data from 2020 and later were therefore not included in our analysis.CDI Diagnosis in GermanyAll CDI cases recorded in the four public databases were identified in the context of routine clinical work-up following recommendations in clinical guidelines. According to the recent ECCMID guideline, there is no unique and simple way to obtain a diagnosis for CDI. The combination of clinical signs and a two-step testing algorithm remains the recommended gold standard . The German clinical guidelines on gastrointestinal infections recommend prompt testing in all patients that present with diarrhoea or elevated risk for CDI. The recommended first step of the testing algorithm is an immunoblot to directly detect glutamate dehydrogenase in the stool sample. A positive result should then be confirmed by testing for toxins A and B .Robert Koch-Institute (RKI)Nationwide mandatory reporting is limited to severe hospitalised CDI cases based on the German Federal Infection Protection Act. Physicians report cases to the RKI’s infection surveillance database. Severe CDI is defined as:The patient is admitted to a medical facility for treatment of a community-onset CDI,The patient is admitted to an intensive care unit for treatment of CDI or its complications,Surgical intervention, e.g.",
+      "token_count": 333,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-5",
+      "section": "Methods",
+      "text": "colectomy, is performed due to megacolon, perforation or refractory colitis; orThe patient dies within 30 days of being diagnosed with CDI and the infection is considered a direct cause of death or a contributing cause of death.In addition, all reported cases must be laboratory-confirmed.The first criterion was modified in 2016: previously, only a hospital re-admission due to recurrent CDI was reported. The data from the RKI online database Survstat@RKI  were queried stratified by patient age, and the respective RKI annual reports  were consulted for the number of CDI-associated deaths.Landesuntersuchungsanstalt (LUA) SaxonyHospitalised and non-hospitalised CDI cases in Saxony (approximately 4.1 million inhabitants in 2019) must be reported by the attending physician to the public health offices, as mandated in the federal state’s Infection Protection Act. Subsequently, they are reviewed to differentiate between severe and mild or moderate symptomatic cases using a short physician questionnaire, and the data are then transferred to the State of Saxony's Health and Veterinary Research Institute. All cases must be laboratory-confirmed. CDI cases and related deaths were extracted from the yearly reports published on the LUA homepage .Clostridioides Difficile-Associated Disease Krankenhaus-Infektions-Surveillance-System (CDAD-KISS)CDAD-KISS is a voluntary surveillance program that included 572 German hospitals in 2019, covering approximately 43% of all patient-days in Germany. All hospitalised CDI cases are recorded. A laboratory confirmation is not explicitly required for the reporting, but CDAD cases must fulfil one or more of three criteria:Diarrhoea or toxic megacolon and either culture-based detection of toxigenic C. difficile or detection of its toxins and/or toxin genes (e.g. through ELISA or PCR) in a stool sample;Endoscopic detection of pseudomembranous colitis;Histopathologic detection of CDI (even without diarrhoea) by endoscopy, colectomy or autopsy.A CDAD case is defined as recurrent if symptoms disappeared for more than 1 week and a new CDAD case occurs within 8 weeks after symptom resolution. The definition for a severe case in CDAD-KISS is identical to that used by RKI.",
+      "token_count": 316,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-6",
+      "section": "Methods",
+      "text": "Data on total (2010–2019), severe (2016–2019) and recurrent cases (2019) were extracted from the yearly reports published on the CDAD-KISS homepage .Gesundheitsberichterstattung des Bundes (GBE-Bund)The diagnoses of all discharged inpatients are recorded by the German Federal Statistical Office in an annual survey in the GBE-Bund database. It contains administrative claims based on International Classification of Disease, Tenth Revision (ICD-10) coded discharge diagnoses. The number of hospitalised patients with a main diagnosis of CDI, their average length of stay, and the number of CDI-related deaths are accessible online; secondary diagnoses or ICD-10 subcategories can be obtained through request to the German Federal Statistical Office . Our queries included main and secondary CDI-related ICD-10 codes A04.7 (enterocolitis due to C. difficile) and U69.40! (recurrent C. difficile infection; only available 2016–2019) stratified by age. To investigate severe cases, the following subcategories were requested for 2016–2019 A04.71 (“without megacolon, with organ complication”), A04.72 (“with megacolon, without organ complication”) or A04.73 (“with megacolon, with organ complication”). Similar queries were conducted for patients with seasonal and zoonotic/pandemic influenza (ICD-10 J09 and J10) and herpes zoster (ICD-10 B02). GBE-Bund also provides cause of death statistics by collecting mandatory data from official death certificates.Emerging Infections Program (EIP)The EIP of the United States Centers for Disease Control and Prevention (CDC) is a population- and laboratory-based CDI surveillance system that records hospitalised and non-hospitalised cases. In 2019, EIP covered 35 counties in 10 states with a total of > 12 million inhabitants. Hospitalisation status is determined by medical records review for hospitalisation within 7 days of laboratory diagnosis. Annual reports of CDI cases and incidences are available for 2012–2019 on the EIP homepage . The number of total US hospital admissions (2016–2019) was taken from the CDC Healthcare-associated Infections (HAI) progress report data tables published on the CDC HAI homepage .Data EvaluationRKITo allow comparison between the different data sources, population-based hospitalised severe CDI incidence (number of CDI hospitalised severe cases/100,000 population per year) was calculated. To describe the demographic characteristics of CDI, cases were aggregated into age groups in 5-year increments between the ages 50 and ≥ 85 years.",
+      "token_count": 349,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-7",
+      "section": "Methods",
+      "text": "Overall and age-specific incidence was calculated for each age cohort obtained from the German Federal Statistical Office .LUAPopulation-based CDI incidence (number of CDI cases/100,000 population per year) was calculated using the average annual German population of Saxony for the respective years .CDAD-KISSSince not all hospitals participate in CDAD-KISS, to derive estimates of the population-based hospitalized CDI incidence, the reported CDI cases were extrapolated nationwide. As the total number of patients treated in CDAD-KISS hospitals is reported yearly (i.e. 2017: 9,490,100), the annual CDAD-KISS market share was calculated based on GBE-Bund total German hospital admissions (i.e. 2017: 19,952,735). Nationwide CDI case numbers were extrapolated using the CDAD-KISS market share (i.e. 2017: 47.6%) .GBE-BundPopulation-based hospitalised CDI incidence was calculated using the average annual German population . To determine the CDI recurrence rate, the number of primary CDI cases was calculated as the sum of main and secondary diagnoses A04.7 per year minus the number of recurrences that are coded as secondary diagnoses (U69.40!) in the same year. Case aggregation into age groups and calculation of age-specific incidence were conducted as described for RKI data. For mortality, the official German cause of death statistics based on physician-issued death certificates and the ICD code A04.7 as primary cause of death was counted. Deaths with secondary diagnosis of CDI are not recorded in the death statistics. The mortality statistics include nosocomial and community-acquired CDI cases.EIPFor calculation of population-based hospitalised CDI incidence, the yearly population estimates from the United States Census Bureau were used . The US CDI hospitalisation rate is available in the EIP 2017 and 2019 reports, Tables 4  and A1, respectively . Aggregation over all CDI cases and age groups results in a proportion of 51% of CDI cases hospitalised in 2017 and of 50% in 2019. The 2018 report directly states a proportion of 47% of treated CDI cases that either required hospitalisation for their CDI or were already hospitalised at the time of their CDI diagnosis. To extrapolate the proportion of hospitalised CDI from 2012–2016, the average of 49% was used.",
+      "token_count": 340,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-8",
+      "section": "Results",
+      "text": "CDI Case Numbers and IncidencesIn 2010, GBE-Bund recorded 86,510 hospitalised CDI cases (main and secondary diagnoses A04.7). Case numbers increased to > 100,000 hospitalised cases per year 2012–2015, reaching a peak in 2013 with 110,961 cases. Starting in 2016, the case numbers steadily declined to 67,247 in 2019. The GBE-Bund population-based hospitalised CDI incidence increased from 105.8 cases/100,000 in 2010 to a peak at 137.6/100,000 in 2013. From 2015, population-based hospitalised CDI incidence steadily declined to 80.9/100,000 in 2019 (Fig. 1). Similar trends were observed in CDAD-KISS and LUA (Fig. 1). As RKI data include severe cases only, reported cases and incidence were 30- to 200-fold lower. However, in contrast to the other surveillance systems, the population-based incidence of severe cases in RKI continued to increase until 2018. The population-based hospitalised CDI incidence for 2019 from GBE-Bund, stratified by age groups, increased with advancing age (Table 2).Fig. 1Trends of hospitalised CDI cases/100.0000 population/year from the three German surveillance systems RKIa, LUAb, CDAD-KISS, the German GBE-Bund database and the US CDC Emerging Infections Program. CDI Clostridioides difficile infection; CDAD-KISS Hospital Infection Surveillance System; GBE-Bund Information System of the Federal Health Monitoring; LUA Saxon State Health and Veterinary Research Institute Saxony; RKI Robert Koch-Institute, US CDC EIP US Centers for Disease Control and Prevention Emerging Infections Program, aincludes severe cases only, balso includes non-hospitalized casesTable 2Data of hospitalised, recurrent, and severe CDI stratified per age group, for the year 2019Age [years] < 5050–5455–5960–6465–6970–7475–79 ≥ 80Hospitalised CDIa Number of cases5,6531,9143,1474,1825,7316,26611,09629,258 Incidence (cases/100,000 population)12.328.247.275.1118.6172.4278.6528.6Recurrent CDIb Number of cases204921492403223696621638 Incidence (cases/100,000 population)0.41.42.24.36.710.216.629.6Severe CDIc Number of cases22067901171481983331088 Incidence (cases/100,000 population)0.41.01.32.13.15.48.419.7ICD-10 International Classification of Disease, Tenth RevisionaGBE-Bund ICD-10 A04.7bGBE-Bund ICD-10 U69.40!cRKIDifferences in population-based hospitalised CDI incidences between individual Federal States did not show any particular trends, and therefore could not be attributed to factors such as age distribution or rural versus urban areas (data not shown).Recurrence and SeverityData on CDI recurrence are available in GBE-Bund from 2016 onwards and in CDAD-KISS from 2019. In 2019, GBE-Bund recorded 63,571 primary hospitalised CDI cases and 3,676 recurrent cases, resulting in a recurrence rate of 5.8%.",
+      "token_count": 346,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-9",
+      "section": "Results",
+      "text": "This was similar to CDAD-KISS, which reported 26,403 hospitalised CDI cases and 1,600 (6.0%) recurrent cases in 2019. For 2016–2018, the numbers of primary hospitalised CDI cases and recurrent cases (%) were 90,384 and 5,289 (5.9%), 83,748 and 5,449 (6.5%) and 76,254 and 4,866 (6.4%), respectively. The population-based recurrent CDI incidence in 2019 increased with age (Table 2), while the recurrence rate was stable over age groups (data not shown).Table 3 shows the incidence of severe hospitalised CDI for 2016–2019. In all four reporting systems, severe hospitalised cases accounted for only a small proportion of hospitalised CDI cases. There was no clear increase or decrease over time. Population-based incidence of severe hospitalised CDI in CDAD-KISS was twice as high as for RKI and LUA. GBE-Bund incidence was lowest. Age-stratification of RKI severe hospitalised CDI cases for 2019 increased with advanced age (Table 2).Table 3Population-based incidence of severe hospitalised CDI reported by the different surveillance systems 2016–2019Annual population-based incidence of severe hospitalised CDI: cases/100,000 population per year (proportion severe/ overall cases in %)RKILUACDAD-KISSGBE-BundCases/100,000%Cases/100,000%Cases/100,000%Cases/100,000%20192.7NAa4.76.28.411.91.45.620183.4NAa4.24.46.88.21.96.320173.4NAa4.84.66.67.52.16.520162.8NAa4.43.96.56.72.67.6Case definitions for severity differ between the individual surveillance system (see Methods section)CDIClostridioides difficile infection; CDAD-KISS Hospital Infection Surveillance System; GBE-Bund Information System of the Federal Health Monitoring; LUA Saxon State Health and Veterinary Research Institute Saxony; NA not applicable; RKI Robert Koch-InstituteaRKI reports severe hospitalised cases onlyMortalityData on CDI mortality were analysed from GBE-Bund. Parallel to the incidence of CDI, the number of CDI-related deaths increased from 1,131 in 2010 to a peak of 2,666 cases in 2015. Subsequently the number fell to 1,006 cases in 2019 (Fig. 2). However, CDI death trends were more pronounced than those of CDI cases (approx. 136% increase of deaths vs. approx. 14% increase of cases, then 62% vs. 37% decrease, respectively).Fig. 2Age-stratification of CDI-related deaths 2010–2019 including nosocomial and community-acquired CDI cases (source: GBE-Bund)The majority of CDI-related deaths occurred among patients of advanced age (Fig. 2).",
+      "token_count": 315,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-10",
+      "section": "Results",
+      "text": "In 2019, 959 of the 1,006 CDI-related deaths (> 95%) were among patients ≥ 65 years, and more than 80% were among patients ≥ 75 years.Hospital BurdenTo better quantify the overall burden on the German healthcare system, the annual number of patient-days (PD) required to treat CDI in hospitals were calculated. For this analysis only main CDI diagnoses were considered (i.e. the reason why a patient was admitted to hospital) to avoid the potential bias that hospitalization itself is a risk for acquiring CDI. Based on GBE-Bund main A04.7 diagnosis from 2019, 20,257 patients were treated in German hospitals with an average length of stay of 10.1 days, resulting in overall 204,596 PD.To put this burden in a broader context, it was compared to herpes zoster and influenza, which are two other infectious diseases that mainly affect the elderly. CDI PD exceeded those for influenza (ICD-10 J09 and J10) and herpes zoster (ICD-10 B02) in all years 2010–2017 (Fig. 3). CDI cases decreased from 2015 while zoster cases steadily increased over the whole reporting period. In 2019, zoster surpassed CDI PD. Influenza cases fluctuated more and, only during the strong influenza seasons 2017/18 and 2018/19, influenza PD exceeded those for CDI.Fig. 3CDI-related overall PD compared to PD for influenza (ICD-10 J09 and J10) and herpes zoster (ICD-10 B02) per year 2010–2019 (source: GBE-Bund). CDI Clostridioides difficile infection; PD patient daysAmong CDI hospitalisations, the average length of hospitalisation decreased from 11.5 to 10.1 days between 2010 and 2019, while for zoster, length decreased from 8.7 to 8.1 days. For influenza, no clear trend was observed, and the average length of hospitalisation varied over the years between 5.2 and 10.1 days.Comparison to US CDI IncidenceNext, GBE-Bund population-based incidence of hospitalised CDI was compared to the US EIP surveillance system for the years 2012–2019. The incidence of hospitalised CDI in Germany ranged from 98–138 hospitalised cases per 100,000 population per year, which was higher than in the US (58–73/100,000). Both countries showed similar trends with a slight and steady decrease from 2015 onwards (Fig.",
+      "token_count": 341,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-11",
+      "section": "Results",
+      "text": "1).In addition, the population-based incidence of overall hospital admission was compared. The incidence of overall admissions was 2.5-fold higher in Germany (2018: 23,893 admission/100,000 population per year) compared to the US (2018: 10,238 admissions/100,000 population per year). Also in 2019, average length of hospitalisation for CDI was much shorter in US with 5.4 days  compared to 10.1 in Germany.",
+      "token_count": 59,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-12",
+      "section": "Discussion",
+      "text": "The analysis of four CDI surveillance systems comprehensively assessed the hospital burden of CDI in Germany. Countrywide reporting occurs through the administrative claims database of the hospitals (GBE-BUND) and the mandatory reporting of severe cases by the RKI. This is complemented by two partial reporting systems: the voluntary reporting in a subset of hospitals (CDAD-KISS) and the mandatory reporting of hospitalised and non-hospitalised cases in the State of Saxony (LUA).The four reporting systems are independent and utilize different methodologies for CDI surveillance. LUA is the most comprehensive, as it is the only system that includes both hospitalised and non-hospitalised CDI cases. CDAD-KISS and GBE-Bund concentrate on hospitalized cases but neither of them requires laboratory confirmation. Lastly, the RKI describes only a small proportion of the disease as it focuses on severe hospitalized cases only.Despite these differences in the individual surveillance systems, LUA, CDAD-KISS, and GBE-Bund yielded similar population-based incidences and trends over time. This indicates a general validity of the reported data without individual bias in one of the systems. Until 2016, there were more than 100,000 hospitalised CDI cases reported each year. Since then, the number has declined. Three new guidelines have been issued by the Commission for Hospital Hygiene and Infection Prevention in 2015 and 2016, updating prevention measures of proper hand hygiene, isolation of infected patients and capacity planning of hospital hygiene staff [5–7]. In addition, efforts of antimicrobial stewardship have been intensified in the same period [27–29]. These are likely important drivers of the observed reduction of CDI incidences in the surveillance datasets.Nevertheless, there might be general bias affecting all three systems, like incomplete stool sampling and testing leading to underdiagnosis of the true CDI incidence in Germany. Previous studies suggested that underdiagnosis of CDI is likely. A recent study conducted in the Muenster/Coesfeld area showed that only 34% of hospitalised patients with new onset diarrhoea had a stool specimen collected and tested for CDI . Similar results have been obtained for the US .",
+      "token_count": 329,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-13",
+      "section": "Discussion",
+      "text": "In addition, among patients with stool samples collected, a substantial proportion are not tested for CDI due to lack of clinical suspicion, or have suboptimal laboratory testing, leading to further underestimation of disease. The EUCLID study estimated that 24.5% of CDI cases in Germany are missed due to these factors . For example, an initially undetected increase of transmission and spread of the hypervirulent C. difficile strain RT027 after 2010 was identified only by literature review .Also, no public surveillance for community-treated CDI exists in Germany and the burden of disease in the outpatient setting cannot therefore be quantified. LUA surveillance reports community-treated CDI cases together with hospitalized cases. Overall LUA cases are very similar to the other surveillance system and, therefore, reporting of non-hospitalised CDI cases appears to be low. It may be concluded that CDI can be regarded as a nosocomial infection, but C. difficile is increasingly being recognized as a cause of community-onset diarrhoea [1, 34]. Therefore, it is more likely that CDI in Germany is highly underreported in the community due to lack of clinical awareness and testing. Implementation of a national surveillance system of community-treated CDI could help to fully describe the burden of CDI and to raise physicians’ awareness.The RKI reports severe hospitalised CDI only. RKI population-based incidence of severe hospitalised CDI increased from 2015 onwards. This is likely related to the broadening of case definition that became effective in 2016. LUA reported a similar incidence of severe hospitalised CDI as RKI surveillance. This is not surprising as the LUA cases are routinely forwarded to the RKI by the local Saxony health departments. GBE-Bund reported a lower incidence of severe hospitalised CDI than RKI and LUA: It is likely that severe diagnoses are only coded if they are relevant for hospital revenue. CDAD-KISS reported the highest incidence of severe hospitalised CDI. A possible explanation could be the overrepresentation of larger hospitals within the voluntary KISS reporting system. In 2019, the market share of all German hospitalisation days in the 572 CDAD-KISS hospitals was 43%.",
+      "token_count": 340,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-14",
+      "section": "Discussion",
+      "text": "This indicates that participating hospitals are mainly large clinics as there are approximately 1900 hospitals in total in Germany . Such hospitals have the resources to support isolation rooms, in-house laboratory facilities and specialised infection control personnel dedicated to and well trained in infection surveillance, and may therefore treat more severe cases compared to smaller institutions. Like with overall CDI cases, underreporting of severe CDI by the RKI may be common. In Munich and Nuremberg between 2013–2016, there were 4.6- and 2.3-fold more CDI deaths reported on death certificates compared to deaths among severe hospitalised CDI cases in the RKI surveillance . Similar results were obtained from a study in Frankfurt .The data from GBE-Bund and CDAD-KISS report comparable rates of recurrence of 5.8–6.5% for 2016–2019. In contrast, a health claims study analysing German data reported higher rates of 18.2% for first recurrence and up to 30% for subsequent recurrences in 2012 . Other international studies confirm these higher rates [1, 38]. There may be several reasons for the discrepancy. The health claims study contained hospitalised and non-hospitalised CDI patients, while the surveillance systems include hospitalised patients only and therefore miss a substantial proportion of recurrences. Moreover, the health claims analysis was conducted in 2012 when CDI incidences peaked. In contrast, the recurrence data collection in the public surveillance started in 2016. Another reason could be the update of the CDI clinical treatment guideline in 2017 . In this update, metronidazole was replaced by vancomycin as the drug of choice to treat initial CDI, and vancomycin is associated with superior clinical cure rates and lower recurrence rates.A substantial number of deaths are associated with hospitalised CDI in Germany. Hospitalised CDI cases and deaths showed parallel trends in 2010–2019 but the increase 2010–2013 as well as the decrease in 2015–2019 was steeper for mortality. A similar trend was observed in the epidemiology of the hypervirulent subtype RT027 in Germany that is associated with increased morbidity and mortality .",
+      "token_count": 327,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-15",
+      "section": "Discussion",
+      "text": "The spread of RT027, subsequent intensified antibiotic stewardship efforts, the new clinical treatment guideline and the curbing of infection transmission in healthcare facilities can explain observed mortality trends. As with CDI cases, there may be significant underreporting of CDI-associated deaths in Germany. Mortality data are obtained from death certificates which are prone to underreporting of specific diseases especially in the elderly population . Also, the GBE-Bund surveillance system only counts deaths where CDI can be assumed to be the causative factor for death. Deaths with secondary diagnosis of CDI are not recorded in the death statistics and are therefore most likely underreported.The surveillance data show that advanced age is a risk factor for a more severe disease, recurrent infection or death among hospitalised CDI cases. This is also described extensively in the literature . Therefore, any new preventative measures targeted to reduce CDI burden will have to take this into account. Similarly, the assessment of new therapeutic or preventive interventions by health economic models will need to consider the increased risk associated with advanced age. The age-stratified data presented in this work could be a valuable source in any such analyses.The overall burden of disease of hospitalised CDI on the German healthcare system is large. We showed that 204,596–355,466 PD are associated with hospitalised CDI annually. To put these estimates into further context, this yearly hospital burden of CDI was compared to those of influenza and herpes zoster. This study showed that, in most years, CDI hospitalisations resulted in more hospitalization days than influenza or zoster. Impressively, even in 2017, when influenza vaccine effectiveness was suboptimal , the resulting high influenza hospital burden in 2018 was only as high as the yearly burden of CDI in 2011–2015. This analysis clearly shows that CDI represents a substantial healthcare burden that requires attention from physicians, the public and healthcare stakeholders.Finally, the incidence of hospitalised CDI in Germany was compared to that in the US EIP surveillance system.",
+      "token_count": 325,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-16",
+      "section": "Discussion",
+      "text": "Differences exist in reporting methodologies, as the EIP conducts active population-based surveillance and ascertains all laboratory-confirmed CDI cases within the surveillance area, whereas GBE-Bund represents administrative ICD-10 data. Even though a certain degree of variance between EIP and GBE-Bund can be assumed, studies showed the usefulness and comparability of these sources . Compared to EIP, the incidence of hospitalised CDI was higher in Germany. Furthermore, the incidence of overall hospital admission per 100,000 population was 2.5 times higher in Germany than in the US. Also, on average, patients stay 5.4 days for CDI in hospital in the US  compared to 10.1 days in Germany. The prolonged hospital exposure of the German population may be one reason for the increased population-based CDI incidence, as hospitalisation is a well-known risk factor for CDI. The US incidence of CDI treated exclusively in the outpatient setting is estimated to be the same as that treated in hospitals . For Germany, no surveillance exists for non-hospitalized CDI, hampering a complete comparison between the two countries. However, the higher incidence of hospitalised CDI in Germany impressively shows the high burden of CDI on the healthcare system and patients’ lives. In the US, the CDC has classified CDI as an “urgent threat” that requires immediate and consequent action by all healthcare stakeholders . In Germany, CDI continues to be underestimated as a public health problem.This study analysed data from public surveillance systems which have individual limitations due to their structure and the design of case definitions. Limitations are highlighted in the Discussion, and can result in individual under- or overestimation of the overall CDI burden. Besides highlighting the high burden of CDI on healthcare systems, this work has described in detail each public surveillance system established in Germany, and discussed individual limitations and strengths in order to provide physicians and healthcare decision-makers with a comprehensive and recent overview, and to allow them an accurate interpretation of the publicly available data.",
+      "token_count": 323,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    },
+    {
+      "chunk_id": "36897556-17",
+      "section": "Conclusions",
+      "text": "The four public surveillance systems provide comprehensive information on the yearly burden of CDI in German hospitals on a national level. Despite different surveillance methodologies utilized, population-based incidences and trends over time are similar, indicating a general validity of the reported data. Albeit numbers of hospitalised CDI cases have been declining since 2016, our analysis shows that the burden of CDI on the healthcare system remains at a high level. New therapeutic or preventive interventions are required to further address this public health problem. The data of the four systems can be valuable for health economic modelling studies to assess such new approaches in future. In addition, the establishment of a surveillance system to measure the burden in the outpatient setting is required to fully assess the impact of CDI disease.",
+      "token_count": 131,
+      "metadata": {
+        "pmid": "36897556",
+        "title": "Epidemiology of Clostridioides difficile Infections in Germany, 2010–2019: A Review from Four Public Databases",
+        "journal": "Infectious Diseases and Therapy",
+        "publication_date": "2023-3-10",
+        "doi": "10.1007/s40121-023-00785-2"
+      }
+    }
+  ],
+  "chunk_count": 18
+}

@@ -176,3 +176,4 @@ cython_debug/
 # ignore chat history
 chat_history.json
 usercred.p12
+data_preprocess/embedded

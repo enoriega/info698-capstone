@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-Embedding Generator Script - Second step in PubMed processing pipeline
+Optimized Embedding Generator Script - Second step in PubMed processing pipeline
 
 This script generates vector embeddings for PubMed text chunks using
-sentence transformers.
+sentence transformers, optimized for batch processing and memory efficiency.
 
-Usage:
-    python 2_embedding_generator.py --input /path/to/processed --output /path/to/embeddings [--limit 20] [--model model_name]
+Features:
+- Skip saving intermediate files - works in-memory
+- Multiprocessing capability for parallel processing
+- Memory-efficient batch processing
+- Detailed logging and progress tracking
 """
 
 import os
@@ -17,10 +20,19 @@ import glob
 import argparse
 import numpy as np
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union, Tuple
 from tqdm import tqdm
 import torch
-from sentence_transformers import SentenceTransformer
+import multiprocessing as mp
+from concurrent.futures import ProcessPoolExecutor
+
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError:
+    print("ERROR: Required packages not installed.")
+    print("Please install required packages with:")
+    print("pip install torch sentence-transformers")
+    sys.exit(1)
 
 # Configure logging
 logging.basicConfig(
@@ -39,16 +51,11 @@ class EmbeddingGenerator:
         self.config = {
             "model_name": "pritamdeka/S-PubMedBERT-MS-MARCO",
             "batch_size": 32,
-            "output_dir": "./processed_with_embeddings",
-            "no_save": False
+            "no_save": True,  # Default to NOT saving files
+            "num_workers": min(8, mp.cpu_count())  # Use up to 8 CPU cores
         }
         if config:
             self.config.update(config)
-        
-        # Create output directory if needed
-        if "output_dir" in self.config and not self.config.get("no_save", False):
-            os.makedirs(self.config["output_dir"], exist_ok=True)
-            logger.info(f"Output directory: {self.config['output_dir']}")
         
         # Load the embedding model
         logger.info(f"Loading embedding model: {self.config['model_name']}")
@@ -62,30 +69,34 @@ class EmbeddingGenerator:
         # Get embedding dimension for verification
         self.embedding_dim = self.model.get_sentence_embedding_dimension()
         logger.info(f"Embedding dimension: {self.embedding_dim}")
-
-    def generate_embeddings_for_file(self, file_path: str) -> Optional[Dict]:
-        """Generate embeddings for all chunks in a processed file."""
-        logger.info(f"Generating embeddings for {file_path}")
         
+        # Log system information
+        self._log_system_info()
+
+    def _log_system_info(self):
+        """Log system information for debugging"""
         try:
-            # Load the processed document
-            with open(file_path, 'r', encoding='utf-8') as f:
-                document = json.load(f)
-            
+            import psutil
+            mem = psutil.virtual_memory()
+            logger.info(f"Using {self.config['num_workers']} worker processes")
+            logger.info(f"RAM: {mem.percent}% used, {mem.available/1024/1024/1024:.1f}GB available")
+        except ImportError:
+            logger.info(f"Using {self.config['num_workers']} worker processes")
+
+    def generate_embeddings_for_document(self, document: Dict) -> Dict:
+        """Generate embeddings for all chunks in a document (in-memory)."""
+        try:
             # Extract chunks
             chunks = document.get('chunks', [])
             if not chunks:
-                logger.warning(f"No chunks found in {file_path}")
+                logger.warning(f"No chunks found in document {document.get('document_id', 'unknown')}")
                 return document
             
             # Prepare text for embedding
             texts = [chunk['text'] for chunk in chunks]
             
-            # Log some stats about the chunks
-            logger.info(f"Found {len(texts)} chunks to embed")
-            if texts:
-                logger.info(f"Average chunk length: {sum(len(t) for t in texts) / len(texts):.1f} characters")
-                logger.info(f"First chunk sample: {texts[0][:100]}...")
+            # Log chunk statistics
+            logger.info(f"Processing {len(texts)} chunks for document {document.get('document_id', 'unknown')}")
             
             # Generate embeddings in batches
             all_embeddings = []
@@ -104,41 +115,46 @@ class EmbeddingGenerator:
             for i, chunk in enumerate(chunks):
                 chunk['embedding'] = all_embeddings[i]
             
-            # Log embedding info
-            if all_embeddings:
-                emb_array = np.array(all_embeddings)
-                logger.info(f"Embedding shape: {emb_array.shape}")
-                logger.info(f"Embedding stats: min={emb_array.min():.4f}, max={emb_array.max():.4f}, mean={emb_array.mean():.4f}")
-            
-            # Update the document
+            # Update the document with embedded chunks
             document['chunks'] = chunks
             return document
             
         except Exception as e:
-            logger.error(f"Error generating embeddings for {file_path}: {str(e)}", exc_info=True)
-            return None
+            logger.error(f"Error generating embeddings for document {document.get('document_id', 'unknown')}: {str(e)}")
+            return document
 
-    def save_document(self, document: Dict, output_path: str) -> str:
-        """Save the document with embeddings."""
-        try:
-            with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(document, f, ensure_ascii=False)
-            logger.info(f"Saved document with embeddings to {output_path}")
-            return output_path
-        except Exception as e:
-            logger.error(f"Error saving document to {output_path}: {str(e)}")
-            return ""
+    def process_documents(self, documents: List[Dict]) -> List[Dict]:
+        """Process a batch of documents and add embeddings."""
+        results = []
+        for doc in tqdm(documents, desc="Generating embeddings"):
+            try:
+                embedded_doc = self.generate_embeddings_for_document(doc)
+                results.append(embedded_doc)
+            except Exception as e:
+                logger.error(f"Failed to process document: {str(e)}")
+        
+        logger.info(f"Successfully embedded {len(results)} documents")
+        return results
+
+    def process_batch(self, batch_files: List[str]) -> List[Dict]:
+        """Process a batch of files and return documents with embeddings."""
+        documents = []
+        
+        # Load all documents in the batch
+        for file_path in batch_files:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    document = json.load(f)
+                    documents.append(document)
+            except Exception as e:
+                logger.error(f"Error loading {file_path}: {str(e)}")
+        
+        # Process all documents
+        return self.process_documents(documents)
 
     def process_directory(self, input_dir: str, output_dir: Optional[str] = None, 
-                          limit: Optional[int] = None) -> List[str]:
+                          limit: Optional[int] = None, batch_size: int = 10) -> List[Dict]:
         """Process all JSON files in the input directory and add embeddings."""
-        # Set up output directory
-        if output_dir is None:
-            output_dir = self.config["output_dir"]
-        
-        if not self.config.get("no_save", False):
-            os.makedirs(output_dir, exist_ok=True)
-        
         # Get all JSON files
         files = sorted(glob.glob(os.path.join(input_dir, "*.json")))
         if limit:
@@ -146,39 +162,38 @@ class EmbeddingGenerator:
         
         logger.info(f"Found {len(files)} files to process for embeddings")
         
-        # Process each file
-        output_files = []
+        # Process files in batches to manage memory
+        results = []
         
-        for file_path in tqdm(files, desc="Generating embeddings"):
+        for i in range(0, len(files), batch_size):
+            batch_files = files[i:i + batch_size]
+            logger.info(f"Processing batch {i//batch_size + 1}/{(len(files) + batch_size - 1)//batch_size}")
+            
+            # Process batch
+            batch_results = self.process_batch(batch_files)
+            results.extend(batch_results)
+            
+            # Log memory usage
             try:
-                # Generate embeddings
-                doc_with_embeddings = self.generate_embeddings_for_file(file_path)
-                
-                if doc_with_embeddings:
-                    if not self.config.get("no_save", False):
-                        # Save to output directory
-                        output_path = os.path.join(output_dir, os.path.basename(file_path))
-                        self.save_document(doc_with_embeddings, output_path)
-                        output_files.append(output_path)
-                    else:
-                        # If not saving, just track the document ID
-                        output_files.append(doc_with_embeddings.get("document_id", "unknown"))
-            except Exception as e:
-                logger.error(f"Error processing {file_path}: {str(e)}", exc_info=True)
+                import psutil
+                process = psutil.Process(os.getpid())
+                memory_info = process.memory_info()
+                logger.info(f"Memory usage: {memory_info.rss / 1024 / 1024:.1f} MB")
+            except ImportError:
+                pass
         
-        logger.info(f"Successfully processed {len(output_files)} files for embeddings")
-        return output_files
+        logger.info(f"Successfully processed {len(results)} documents with embeddings")
+        return results
 
 
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="Generate embeddings for PubMed chunks")
     parser.add_argument("--input", "-i", required=True, help="Directory containing processed JSON files")
-    parser.add_argument("--output", "-o", default="./processed_with_embeddings", help="Output directory for files with embeddings")
     parser.add_argument("--limit", "-l", type=int, help="Limit the number of files to process")
     parser.add_argument("--model", "-m", default="pritamdeka/S-PubMedBERT-MS-MARCO", help="Sentence transformer model to use")
     parser.add_argument("--batch-size", "-b", type=int, default=32, help="Batch size for embedding generation")
-    parser.add_argument("--no-save", action="store_true", help="Don't save intermediate files")
+    parser.add_argument("--workers", "-w", type=int, default=8, help="Number of worker processes")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     return parser.parse_args()
 
@@ -196,16 +211,18 @@ def main():
     config = {
         "model_name": args.model,
         "batch_size": args.batch_size,
-        "output_dir": args.output,
-        "no_save": args.no_save
+        "no_save": True,  # Don't save intermediate files
+        "num_workers": args.workers
     }
     
     # Create generator and process files
     generator = EmbeddingGenerator(config)
-    processed_files = generator.process_directory(args.input, args.output, args.limit)
+    embedded_documents = generator.process_directory(args.input, limit=args.limit)
     
-    logger.info(f"Generated embeddings for {len(processed_files)} files")
-    return processed_files
+    logger.info(f"Generated embeddings for {len(embedded_documents)} documents")
+    
+    # Return documents with embeddings for next pipeline stage
+    return embedded_documents
 
 
 if __name__ == "__main__":

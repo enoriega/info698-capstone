@@ -6,7 +6,7 @@ This script handles parsing PubMed XML files, extracting metadata and text,
 and chunking the text into manageable pieces.
 
 Usage:
-    python 1_pubmed_parser.py --input /path/to/xmls --output /path/to/output [--limit 20] [--no-save]
+    python 1_pubmed_parser.py --input /path/to/xmls --batch-size 100 --workers 8 [--limit 20] [--no-save]
 """
 
 import os
@@ -17,11 +17,14 @@ import re
 import glob
 import argparse
 import unicodedata
+import multiprocessing
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any, Union, Tuple
 from tqdm import tqdm
 from lxml import etree
+from multiprocessing import Pool, Manager, Value, Lock
+from functools import partial
 
 # Configure logging
 logging.basicConfig(
@@ -34,6 +37,30 @@ logging.basicConfig(
 )
 logger = logging.getLogger("pubmed_parser")
 
+# Global counters with thread safety
+class ProcessingStats:
+    def __init__(self):
+        self.processed_count = Value('i', 0)
+        self.failed_count = Value('i', 0)
+        self.total_chunks = Value('i', 0)
+        self.lock = Lock()
+        
+    def update(self, processed=0, failed=0, chunks=0):
+        with self.lock:
+            self.processed_count.value += processed
+            self.failed_count.value += failed
+            self.total_chunks.value += chunks
+            
+    def get_stats(self):
+        return {
+            "processed": self.processed_count.value,
+            "failed": self.failed_count.value,
+            "total_chunks": self.total_chunks.value
+        }
+
+# Global stats object
+stats = ProcessingStats()
+
 class PubMedProcessor:
     def __init__(self, config: Dict = None):
         """Initialize the PubMed processor with configuration."""
@@ -44,7 +71,10 @@ class PubMedProcessor:
             "max_chunk_size": 500,
             "respect_paragraphs": True,
             "xml_namespaces": {"xlink": "http://www.w3.org/1999/xlink"},
-            "output_dir": "./processed"
+            "output_dir": "./processed",
+            "no_save": False,
+            "batch_size": 100,
+            "workers": 8
         }
         if config:
             self.config.update(config)
@@ -366,39 +396,55 @@ class PubMedProcessor:
 
     def process_file(self, file_path: str) -> Optional[Dict]:
         """Process a single XML file."""
-        logger.info(f"Processing {file_path}")
+        try:
+            # Parse the file
+            root = self.parse_file(file_path)
+            if root is None:
+                logger.error(f"Failed to parse {file_path}")
+                stats.update(failed=1)
+                return None
 
-        # Parse the file
-        root = self.parse_file(file_path)
-        if root is None:
-            logger.error(f"Failed to parse {file_path}")
+            # Extract metadata
+            metadata = self.extract_metadata(root)
+            if not metadata.get("pmid"):
+                metadata["pmid"] = Path(file_path).stem
+
+            # Extract text sections
+            sections = self.extract_text_sections(root)
+
+            # Chunk text
+            chunks = self.chunk_text(sections, metadata)
+
+            # Create document
+            document = {
+                "document_id": metadata.get("pmid", Path(file_path).stem),
+                "file_path": str(file_path),
+                "metadata": metadata,
+                "chunks": chunks,
+                "chunk_count": len(chunks)
+            }
+
+            # Update stats
+            stats.update(processed=1, chunks=len(chunks))
+            
+            # Log progress
+            current_stats = stats.get_stats()
+            logger.info(f"Processed {file_path}: {len(sections)} sections, {len(chunks)} chunks | "
+                       f"Total: {current_stats['processed']} processed, {current_stats['failed']} failed, "
+                       f"{current_stats['total_chunks']} chunks")
+            
+            return document
+            
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}", exc_info=True)
+            stats.update(failed=1)
             return None
-
-        # Extract metadata
-        metadata = self.extract_metadata(root)
-        if not metadata.get("pmid"):
-            metadata["pmid"] = Path(file_path).stem
-
-        # Extract text sections
-        sections = self.extract_text_sections(root)
-
-        # Chunk text
-        chunks = self.chunk_text(sections, metadata)
-
-        # Create document
-        document = {
-            "document_id": metadata.get("pmid", Path(file_path).stem),
-            "file_path": str(file_path),
-            "metadata": metadata,
-            "chunks": chunks,
-            "chunk_count": len(chunks)
-        }
-
-        logger.info(f"Extracted {len(sections)} sections and {len(chunks)} chunks")
-        return document
 
     def save_document(self, document: Dict, output_format: str = "json") -> str:
         """Save the processed document and return the output path."""
+        if self.config.get("no_save", False):
+            return document["document_id"]
+            
         output_dir = self.config.get("output_dir", ".")
         document_id = document["document_id"]
 
@@ -406,14 +452,42 @@ class PubMedProcessor:
             output_file = os.path.join(output_dir, f"{document_id}.json")
             with open(output_file, 'w', encoding='utf-8') as f:
                 json.dump(document, f, ensure_ascii=False, indent=2)
-            logger.info(f"Saved to {output_file}")
+            logger.debug(f"Saved to {output_file}")
             return output_file
         else:
             logger.error(f"Unsupported output format: {output_format}")
             return ""
 
-    def process_directory(self, directory_path: str, output_format: str = "json", file_limit: int = None) -> List[str]:
-        """Process all XML files in a directory."""
+    def process_batch(self, batch_files: List[str], batch_id: int) -> Tuple[List[Dict], List[str]]:
+        """Process a batch of files and return the documents."""
+        logger.info(f"Starting batch {batch_id} with {len(batch_files)} files")
+        batch_start_time = datetime.now()
+        
+        documents = []
+        processed_files = []
+        
+        for file_path in batch_files:
+            document = self.process_file(file_path)
+            if document:
+                documents.append(document)
+                if not self.config.get("no_save", False):
+                    output_file = self.save_document(document)
+                    processed_files.append(output_file)
+                else:
+                    processed_files.append(document["document_id"])
+        
+        batch_end_time = datetime.now()
+        batch_duration = (batch_end_time - batch_start_time).total_seconds()
+        logger.info(f"Completed batch {batch_id}: {len(documents)} documents in {batch_duration:.2f} seconds")
+        
+        return documents, processed_files
+
+    def worker_process_file(self, file_path: str) -> Optional[Dict]:
+        """Worker function for multiprocessing."""
+        return self.process_file(file_path)
+        
+    def process_directory(self, directory_path: str, output_format: str = "json", file_limit: int = None) -> List[Dict]:
+        """Process all XML files in a directory using batch processing and multiprocessing."""
         directory = Path(directory_path)
         if not directory.exists() or not directory.is_dir():
             logger.error(f"Directory not found: {directory_path}")
@@ -421,39 +495,54 @@ class PubMedProcessor:
 
         # Find all XML files
         all_files = list(directory.glob("**/*.xml")) + list(directory.glob("**/*.nxml"))
-        logger.info(f"Found {len(all_files)} XML files in {directory_path}")
+        all_files = [str(f) for f in all_files]
+        
+        total_files = len(all_files)
+        logger.info(f"Found {total_files} XML files in {directory_path}")
 
         # Limit the number of files if specified
         if file_limit and file_limit > 0:
             files_to_process = all_files[:file_limit]
-            logger.info(f"Processing {len(files_to_process)} out of {len(all_files)} files")
+            logger.info(f"Processing {len(files_to_process)} out of {total_files} files")
         else:
             files_to_process = all_files
 
-        # Process each file
-        processed_count = 0
-        failed_count = 0
-        processed_files = []
-
-        for file_path in tqdm(files_to_process, desc="Processing XML files"):
-            try:
-                document = self.process_file(str(file_path))
-                if document:
-                    if not self.config.get("no_save", False):
-                        output_file = self.save_document(document, output_format)
-                        processed_files.append(output_file)
-                    else:
-                        # If not saving, just add the document ID to the list
-                        processed_files.append(document["document_id"])
-                    processed_count += 1
-                else:
-                    failed_count += 1
-            except Exception as e:
-                logger.error(f"Error processing {file_path}: {e}", exc_info=True)
-                failed_count += 1
-
-        logger.info(f"Processing complete. Successfully processed: {processed_count}, Failed: {failed_count}")
-        return processed_files
+        # Process in batches with multiprocessing
+        batch_size = self.config.get("batch_size", 100)
+        num_workers = min(self.config.get("workers", 8), multiprocessing.cpu_count())
+        
+        # Create batches
+        batches = [files_to_process[i:i + batch_size] for i in range(0, len(files_to_process), batch_size)]
+        logger.info(f"Created {len(batches)} batches with batch size {batch_size}")
+        logger.info(f"Using {num_workers} worker processes")
+        
+        all_documents = []
+        
+        # Use multiprocessing for each batch
+        with Pool(processes=num_workers) as pool:
+            results = list(tqdm(
+                pool.imap(self.worker_process_file, files_to_process),
+                total=len(files_to_process),
+                desc=f"Processing {total_files} files"
+            ))
+            
+            # Filter out None results
+            valid_results = [doc for doc in results if doc is not None]
+            all_documents.extend(valid_results)
+            
+            # Save documents if not disabled
+            if not self.config.get("no_save", False):
+                for doc in valid_results:
+                    self.save_document(doc, output_format)
+        
+        # Log final statistics
+        final_stats = stats.get_stats()
+        logger.info(f"Processing complete. Successfully processed: {final_stats['processed']}, "
+                   f"Failed: {final_stats['failed']}, Total chunks: {final_stats['total_chunks']}")
+                   
+        logger.info(f"Average chunks per document: {final_stats['total_chunks'] / max(1, final_stats['processed']):.2f}")
+        
+        return all_documents
 
 
 def parse_args():
@@ -465,6 +554,8 @@ def parse_args():
     parser.add_argument("--chunk-size", type=int, default=350, help="Target chunk size in tokens")
     parser.add_argument("--min-chunk-size", type=int, default=100, help="Minimum chunk size in tokens")
     parser.add_argument("--max-chunk-size", type=int, default=500, help="Maximum chunk size in tokens")
+    parser.add_argument("--batch-size", type=int, default=100, help="Number of files to process in each batch")
+    parser.add_argument("--workers", "-w", type=int, default=8, help="Number of worker processes")
     parser.add_argument("--no-save", action="store_true", help="Don't save intermediate files")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     return parser.parse_args()
@@ -485,15 +576,17 @@ def main():
         "chunk_size": args.chunk_size,
         "min_chunk_size": args.min_chunk_size,
         "max_chunk_size": args.max_chunk_size,
-        "no_save": args.no_save
+        "no_save": args.no_save,
+        "batch_size": args.batch_size,
+        "workers": args.workers
     }
     
     # Create processor and process files
     processor = PubMedProcessor(config)
-    processed_files = processor.process_directory(args.input, file_limit=args.limit)
+    processed_documents = processor.process_directory(args.input, file_limit=args.limit)
     
-    logger.info(f"Processed {len(processed_files)} files")
-    return processed_files
+    # Return the processed documents for pipeline use
+    return processed_documents
 
 
 if __name__ == "__main__":

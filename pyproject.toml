@@ -4,14 +4,28 @@ version = "0.1.0"
 description = "Agent Based RAG system over PMC"
 readme = "README.md"
 requires-python = ">=3.12"
+
 dependencies = [
     "lxml>=4.9.3",
     "numpy>=1.24.0",
     "torch>=2.0.0",
     "tqdm>=4.66.1",
     "sentence-transformers>=2.2.2",
-    "weaviate-client>=4.11.3",
+    "weaviate-client>=4.4.4",
     "colorama>=0.4.6",
     "streamlit>=1.30.0",
-    "python-dotenv>=1.0.0"
+    "typing-extensions>=4.0.0"
+]
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = [
+  "pubmed_pipeline",
+  "pubmed_parser",
+  "retriever",
+  "embedding_generator",
+  "index_embeddings"
 ]

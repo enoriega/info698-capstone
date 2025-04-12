@@ -57,7 +57,11 @@ class MyRetriever(BaseRetriever):
         documents = []
         for obj in results.objects:
             text_content = f"Title: {obj.properties.get('title', '')}\n"
-            text_content += f"Text: {obj.properties.get('text', '')}"
+            text_content += f"Text: {obj.properties.get('text', '')}\n"
+            text_content += "\nMetadata below--\n"
+            text_content += f"PMID: {obj.properties.get('pmid', '')}\n"
+            text_content += f"Journal: {obj.properties.get('journal', '')}\n"
+            text_content += f"Source: PubMed"
 
             metadata = {
                 "pmid": obj.properties.get("pmid", ""),

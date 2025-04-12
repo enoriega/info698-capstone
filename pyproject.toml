@@ -12,6 +12,7 @@ dependencies = [
     "langchain-openai>=0.3.8",
     "langchain-weaviate>=0.0.4",
     "lxml>=5.3.1",
+    "notebook>=7.3.3",
     "openai>=1.66.3",
     "python-dotenv>=1.0.1",
     "sentence-transformers>=4.0.1",

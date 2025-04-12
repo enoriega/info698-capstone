@@ -50,7 +50,7 @@ def get_embedding_model(model_name="pritamdeka/S-PubMedBERT-MS-MARCO"):
         raise
 class MyRetriever(BaseRetriever):
     def _get_relevant_documents(self, query: str) -> list[Document]:
-        coll = db_client_global.collections.get("PubMedArticle")
+        coll = db_client_global.collections.get("test_db")
         embedding_model = get_embedding_model()
         query_vector = embedding_model.encode(query).tolist()
         results = coll.query.near_vector(near_vector=query_vector, limit=2)
@@ -86,7 +86,7 @@ class PubMedRAG:
         embedding_model = SentenceTransformer("pritamdeka/S-PubMedBERT-MS-MARCO")
         vectorstore = WeaviateVectorStore(
             client=self.db_client,
-            index_name="PubMedArticle",
+            index_name="test_db",
             text_key="text",
             embedding=embedding_model,
         )
@@ -99,7 +99,20 @@ class PubMedRAG:
             description="A tool to retrieve documents from my knowledge base created from PubMedCentral Database.",
         )
         logger.debug("Initializing RAG pipeline")
-        system_message = "You are a assistant with expertise in analyzing PubMed papers. You have been given a pubmed_retriever tool, which gets the relevant document from the vector database. Your task is to provide answers to user queries according to the documents found in the vector database. You also have access to wikipedia_retriever tool which you can use to get understanding beyond the pubmed_retriever. Dont utilize the full recursion limit, in 5-10 retrievals, summarize your findings."
+        system_message =  """
+        You are an intelligent assistant specialized in analyzing biomedical literature, particularly PubMed papers. You have access to two tools:
+
+        - **`pubmed_retriever`**: Use this to retrieve relevant documents from a vector database of PubMed articles. Each document includes metadata such as the PubMed ID (`PMID`), journal name, and source.
+        - **`wikipedia_retriever`**: Use this to gain general background knowledge or clarify concepts not directly addressed by the PubMed documents.
+
+        ### Your Task:
+        - Respond to user queries by analyzing the documents retrieved by `pubmed_retriever`.
+        - Support your responses with direct references to the evidence found, **citing the PubMed ID (PMID)** from each relevant document's metadata.
+        - Use the `wikipedia_retriever` only when the PubMed documents do not fully address the user’s question or when you need additional context or background information.
+        - Avoid using the full recursion limit; aim to complete your analysis within **5–10 retrievals**.
+        - Your final answer should be **clear, concise, and grounded in the retrieved scientific literature**.
+        """
+
 
         wiki_retriever = create_retriever_tool(
             retriever=WikipediaRetriever(),
@@ -155,10 +168,7 @@ class PubMedRAG:
 
                         # Enhanced markdown formatting for tool calls
                         tool_call_msg = (
-                            f"\n\n> 🔍 **Research in Progress**\n\n"
                             f"Searching through literature using `{tool_name}`\n\n"
-                            f"**Query**: {tool_query}\n\n"
-                            f"---"  # Horizontal line for visual separation
                         )
                         outputs.append(tool_call_msg)
 

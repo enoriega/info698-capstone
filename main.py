@@ -141,19 +141,19 @@ def main():
     # Create a container for chat history
     chat_container = st.container()
 
-    # Handle user input
-    if user_input := st.chat_input(
-        "What would you like to know about medical research?"
-    ):
-        logger.debug(f"Received user input: {user_input[:50]}...")
-        # Add user message to chat history
+    for message in st.session_state.chat_history:
+        display_message(message)
+        
+    user_input = st.chat_input("What would you like to know?")
+    
+    if user_input:
         st.session_state.chat_history.append({"role": "user", "content": user_input})
+        display_message({"role": "user", "content": user_input})
 
-        # Get assistant response
-        # get_llm_response is the hero function here, Which gets the response from the RAG pipeline.
-        # Takes the RAG instance
-        ## TODO: Enhancement : Add text Streaming
-        with st.spinner("Researching PubMed articles..."):
+        with st.chat_message("assistant"):
+            # Get assistant response
+            # get_llm_response is the hero function here, Which gets the response from the RAG pipeline.
+            # Takes the RAG instance
             response_content = ""
             response_placeholder = st.empty()
             for chunk in get_llm_response(
@@ -164,8 +164,7 @@ def main():
 
                 if chunk:
                     response_content += str(chunk)
-                    formatted_content = response_content.replace("\n", "\n\n")
-                    response_placeholder.markdown(formatted_content)
+                    response_placeholder.markdown(response_content)
 
         # Add assistant response to chat history
         st.session_state.chat_history.append(
@@ -176,9 +175,6 @@ def main():
         save_chat_history(st.session_state.chat_history)
 
     # Display all messages in the chat container
-    with chat_container:
-        for message in st.session_state.chat_history:
-            display_message(message)
 
     atexit.register(close_weaviate_client, st.session_state.db_client)
 

@@ -11,6 +11,7 @@ import os
 # Load environment variables
 load_dotenv()
 WEAVIATE_API_KEY = os.getenv("WEAVIATE_API_KEY")
+WEAVIATE_IP = os.getenv("WEAVIATE_IP")
 
 # Creating an object
 logger = logging.getLogger()
@@ -24,7 +25,7 @@ def get_embedding_model(self):
 
 
 def connect_to_weaviate(
-    host="149.165.151.58",
+    host=WEAVIATE_IP,
     port=8080,
     grpc_port=50051,
     api_key=WEAVIATE_API_KEY,

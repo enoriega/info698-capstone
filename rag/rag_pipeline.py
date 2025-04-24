@@ -5,7 +5,7 @@ from langchain_openai import ChatOpenAI
 from langchain.schema import Document
 from langchain.tools.retriever import create_retriever_tool
 from data_loader.data_loader import load_pubmed_data
-from .llm_integration import create_llama_chat_model, create_rag_chain
+from .llm_integration import create_rag_chain
 from langchain_community.retrievers import WikipediaRetriever
 from langgraph.prebuilt import create_react_agent
 from langchain.embeddings.base import Embeddings
@@ -18,16 +18,8 @@ from langchain_weaviate import WeaviateVectorStore
 
 RECURSION_LIMIT = 100
 
-# Creating an object
-logger = logging.getLogger()
+from logger_setup import logger
 
-# Setting the threshold of logger to DEBUG
-logger.setLevel(logging.INFO)
-
-logger.warning("Warning Logger  from Rag Pipeline")
-logger.error("Error Logger from Rag Pipeline")
-logger.debug("DEBUG Logger from Rag Pipeline")
-logger.info("INFO Logger from Rag Pipeline")
 # Global instance
 vectorstore_as_retriever = None
 db_client_global = None
@@ -53,7 +45,7 @@ class MyRetriever(BaseRetriever):
         coll = db_client_global.collections.get("test_db")
         embedding_model = get_embedding_model()
         query_vector = embedding_model.encode(query).tolist()
-        results = coll.query.near_vector(near_vector=query_vector, limit=2)
+        results = coll.query.near_vector(near_vector=query_vector, limit=3)
         documents = []
         for obj in results.objects:
             text_content = f"Title: {obj.properties.get('title', '')}\n"
@@ -77,15 +69,18 @@ class MyRetriever(BaseRetriever):
 
 class PubMedRAG:
 
-    def __init__(self, db_client):
+    def __init__(self, db_client, model_choice="gpt-4o"):
         global db_client_global
         # Initialize components as None
         self.llm = None
         self.rag_chain = None
         self.db_client = db_client
         db_client_global = db_client
+        logger.debug("Model Choice RAG_PIPELINE: %s", model_choice)
+        self.model_choice = model_choice
 
     def initialize(self):
+        logger.debug("Initializing RAG pipeline with model choice: %s", self.model_choice)
 
         embedding_model = SentenceTransformer("pritamdeka/S-PubMedBERT-MS-MARCO")
         vectorstore = WeaviateVectorStore(
@@ -94,7 +89,7 @@ class PubMedRAG:
             text_key="text",
             embedding=embedding_model,
         )
-        vectorstore_as_retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+        vectorstore_as_retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
         retriever = MyRetriever()
 
         retrieval_tool = create_retriever_tool(
@@ -137,7 +132,8 @@ class PubMedRAG:
             logger.debug("RAG pipeline initialization complete")
 
     def _initialize_llm(self):
-        self.llm = create_llama_chat_model()
+        from .llm_integration import create_llm_model
+        self.llm = create_llm_model(self.model_choice)
 
     def query(self, question: str) -> str:
 
@@ -172,7 +168,7 @@ class PubMedRAG:
 
                         # Enhanced markdown formatting for tool calls
                         tool_call_msg = (
-                            f"Searching through literature using `{tool_name}`\n\n"
+                            f"Searching :`{tool_name}` , Query : `{tool_query}`\n\n"
                         )
                         outputs.append(tool_call_msg)
 

@@ -7,34 +7,36 @@ import logging
 from langchain.tools.retriever import create_retriever_tool
 from rag.rag_pipeline import PubMedRAG
 
-logger = logging.getLogger()
+from logger_setup import logger
 
-# Setting the threshold of logger to DEBUG
-logger.setLevel(logging.INFO)
-
-logger.warning("Warning Logger  from LLM response")
-logger.error("Error Logger from LLM response")
-logger.debug("DEBUG Logger from LLM response")
-logger.info("INFO Logger from LLM response")
 # Load environment variables
 load_dotenv()
 
 # Global RAG pipeline instance
 _rag_instance = None
+_current_model = None
 
+def get_rag_instance(db_client, model_choice="gpt-4o") -> PubMedRAG:
+    global _rag_instance, _current_model
 
-def get_rag_instance(db_client) -> PubMedRAG:
-    global _rag_instance
-
-    if _rag_instance is None:
-        logger.debug("Initializing new RAG instance")
-
-        ## TODO: Remove this is only for testing, Initialize the supabase client. only once and pass the retriver for langchain RAG.
-        _rag_instance = PubMedRAG(db_client)
+    # Initialize a new instance if either:
+    # 1. We don't have an instance yet
+    # 2. The model choice has changed
+    if _rag_instance is None or model_choice != _current_model:
+        logger.debug(f"Initializing new RAG instance with model: {model_choice}")
+        
+        # Create new instance with the specified model
+        _rag_instance = PubMedRAG(db_client, model_choice)
         _rag_instance.initialize()
-
+        
+        # Update the current model tracker
+        _current_model = model_choice
+        
+        logger.debug(f"RAG instance initialized with {model_choice}")
+    else:
+        logger.debug(f"Using existing RAG instance with model: {_current_model}")
+    
     return _rag_instance
-
 
 def format_chat_history(messages: List[Dict[str, str]]) -> List:
     formatted_messages = [

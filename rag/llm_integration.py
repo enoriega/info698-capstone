@@ -6,7 +6,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
-
+from logger_setup import logger
 # Load environment variables
 load_dotenv()
 LLM_APIKEY = os.getenv("LLM_APIKEY")
@@ -14,12 +14,27 @@ LLM_API_BASE = os.getenv("LLM_API_BASE", "https://llm-api.cyverse.ai/v1")
 
 
 def create_llama_chat_model():
+    logger.debug("Creating Llama chat model")
     return ChatOpenAI(
         model="Llama-3.2-11B-Vision-Instruct",
         openai_api_key=LLM_APIKEY,
         openai_api_base=LLM_API_BASE,
     )
 
+def create_llm_model(model_choice: str = "gpt-4o"):
+    logger.debug("create_llm_model with model choice: %s", model_choice)
+    """Create LLM model based on choice."""
+    if model_choice == "Llama-3.2-11B-Vision-Instruct":
+        return ChatOpenAI(
+            model="Llama-3.2-11B-Vision-Instruct",
+            openai_api_key=LLM_APIKEY,
+            openai_api_base=LLM_API_BASE,
+        )
+    else: 
+        return ChatOpenAI(
+            model="gpt-4o",
+            openai_api_key=os.getenv("OPENAI_API_KEY"),
+        )
 
 def format_chat_history(messages: List[Dict[str, str]]) -> List:
     formatted_messages = [

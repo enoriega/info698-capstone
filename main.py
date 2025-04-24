@@ -10,22 +10,7 @@ from langchain.schema import Document
 from sentence_transformers import SentenceTransformer
 from ui.llm_response import get_llm_response, get_rag_instance
 from weaviate_db.client import connect_to_weaviate, close_weaviate_client
-
-# Configure logging - simplified
-logging.basicConfig(
-    filename="PubMedRagMain.log", format="%(asctime)s %(message)s", filemode="w"
-)
-
-# Creating an object
-logger = logging.getLogger()
-
-# Setting the threshold of logger to DEBUG
-logger.setLevel(logging.INFO)
-
-logger.warning("Warning Logger")
-logger.error("Error Logger")
-logger.debug("DEBUG Logger")
-logger.info("INFO Logger")
+from logger_setup import logger
 
 # Define the path for storing chat history
 CHAT_HISTORY_FILE = "chat_history.json"
@@ -75,7 +60,9 @@ def initialize_session():
     if "db_client" not in st.session_state:
         db_client = connect_to_weaviate()
         st.session_state.db_client = db_client
-
+    if "llm_model" not in st.session_state:
+        logger.debug("Setting default LLM model")
+        st.session_state.llm_model = "gpt-4o"
 
 def main():
     # TODO : Add Streaming of text
@@ -97,19 +84,36 @@ def main():
     # Second hero function here, which initializes the RAG instance.
     db_instance = st.session_state.db_client
     if st.session_state.rag_instance is None:
-        logger.debug("Getting RAG instance for the first time")
-        st.session_state.rag_instance = get_rag_instance(db_instance)
-        if st.session_state.rag_instance:
-            st.session_state.rag_initialized = True
-    else:
-        logger.debug("Using existing RAG instance from session state")
-        rag_instance = st.session_state.rag_instance
-        st.session_state.rag_initialized = True
+        logger.debug(f"Initializing RAG with model: {st.session_state.llm_model}")
+        with st.spinner(f"Initializing RAG system with {st.session_state.llm_model}... (this might take a minute)"):
+            try:
+                st.session_state.rag_instance = get_rag_instance(db_instance, model_choice=st.session_state.llm_model)
+                if st.session_state.rag_instance:
+                    st.session_state.rag_initialized = True
+                    logger.debug("RAG system initialized successfully!")
+            except Exception as e:
+                st.error(f"Error initializing RAG system: {str(e)}")
+                logger.error(f"RAG initialization error: {str(e)}")
 
     # Add sidebar controls
     # Any streamlit command inside this block will be rendered in the sidebar
     with st.sidebar:
         st.header("Controls")
+
+        # Add model selector
+        model_choice = st.selectbox(
+            "Select LLM Model",
+            ["gpt-4o", "Llama-3.2-11B-Vision-Instruct"],
+            index=0 if st.session_state.llm_model == "gpt-4o" else 1,
+            key="model_selector"
+        )
+
+        # Update session state if model changed
+        if model_choice != st.session_state.llm_model:
+            st.session_state.llm_model = model_choice
+            st.session_state.rag_instance = None  # Force RAG reinitialization
+            st.session_state.rag_initialized = False
+            st.rerun()
 
         if st.button("Clear Chat History"):
             st.session_state.chat_history = []
@@ -122,21 +126,10 @@ def main():
         # Display text in header formatting.
         st.header("RAG Settings")
 
-        # Initialize RAG system if not already done
-        if not st.session_state.rag_initialized:
-            with st.spinner("Initializing RAG system... (this might take a minute)"):
-                try:
-                    # This will create the vectorstore if it doesn't exist
-                    ## TODO : Add return value for get_rag_instance() better logging,
-                    ## Also initialze the rag_initialized session state accordingly.
-                    rag_instance = get_rag_instance(db_instance)
-                    if rag_instance:
-                        st.session_state.rag_initialized = True
-                        st.success("RAG system initialized successfully!")
-                except Exception as e:
-                    st.error(f"Error initializing RAG system: {str(e)}")
+        if st.session_state.rag_initialized:
+            st.success(f"RAG system ready with {st.session_state.llm_model}!")
         else:
-            st.success("RAG system ready!")
+            st.warning("RAG system not initialized.")
 
     # Create a container for chat history
     chat_container = st.container()

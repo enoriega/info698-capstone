@@ -65,18 +65,40 @@ def get_llm_response(
     user_input: str, rag_instance: PubMedRAG, chat_history: List[Dict[str, str]] = None
 ):
     try:
-        logger.debug("Processing user input for LLM response")
-        # Initialize chat history if needed
-        if chat_history is None:
-            chat_history = []
+        # Format conversation context
+        MAX_HISTORY_MESSAGES = 5  # Define constant for context window
+        context = ""
+        
+        if chat_history:
+            # Take only the last N messages
+            recent_messages = chat_history[-MAX_HISTORY_MESSAGES:]
+            logger.debug(f"Using {len(recent_messages)} messages for context")
+            
+            # Format messages with clear separation
+            formatted_messages = []
+            for msg in recent_messages:
+                role = "Human" if msg['role'] == "user" else "Assistant"
+                formatted_messages.append(f"{role}:\n{msg['content']}\n--------\n")
+            
+            context = "\n".join(formatted_messages)
+            
+        # Create augmented query with structured format
+        augmented_query = (
+            "Previous conversation:\n"
+            f"{context}\n"
+            "--------\n\n"
+            "Current question:\n"
+            f"{user_input}\n"
+            "--------\n\n"
+            "Please provide a response considering the above context from previous conversation and current question."
+        )
+        
+        logger.debug(f"Augmented query length: {len(augmented_query)}")
+        logger.debug("Processing query with conversation context")
+        logger.debug("Augmented query: %s", augmented_query)
 
-        for chunk in rag_instance.query_stream(user_input):
+        for chunk in rag_instance.query_stream(augmented_query):
             yield chunk
-
-        # Check
-        # formatted_messages = format_chat_history(chat_history)
-        # formatted_messages.append(HumanMessage(content=user_input))
-        # formatted_messages.append(AIMessage(content=response))
 
     except Exception as e:
         logger.error(f"Error in get_llm_response: {str(e)}", exc_info=True)

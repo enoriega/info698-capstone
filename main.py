@@ -154,10 +154,10 @@ def main():
                 st.session_state.rag_instance,
                 st.session_state.chat_history[:-1],
             ):
-
                 if chunk:
                     response_content += str(chunk)
-                    response_placeholder.markdown(response_content)
+                    with response_placeholder.container():
+                        st.markdown(response_content)
 
         # Add assistant response to chat history
         st.session_state.chat_history.append(

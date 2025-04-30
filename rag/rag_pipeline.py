@@ -197,74 +197,54 @@ class PubMedRAG:
             return f"Error generating response: {str(e)}"
 
     def process_chunks(self, chunk):
-        """
-        Processes a chunk from the agent and returns formatted output strings
-        with enhanced markdown formatting for better readability.
-        """
-        outputs = []
+        if "agent" not in chunk:
+            return None
 
-        if "agent" in chunk:
-            for message in chunk["agent"]["messages"]:
-                if "tool_calls" in message.additional_kwargs:
-                    tool_calls = message.additional_kwargs["tool_calls"]
+        for message in chunk["agent"]["messages"]:
+            # Handle tool calls (searching actions)
+            if "tool_calls" in message.additional_kwargs:
+                for tool_call in message.additional_kwargs["tool_calls"]:
+                    tool_name = tool_call["function"]["name"]
+                    tool_arguments = eval(tool_call["function"]["arguments"])
+                    return f"🔍 Searching {tool_name}:: {tool_arguments['query']}\n\n"
+            
+            # Handle actual content
+            elif message.content:
+                content = message.content
+                # If it's the start of the response, add the header
+                if not hasattr(self, '_response_started'):
+                    self._response_started = True
+                    return f"\n### Research Findings\n\n{content}"
+                return content
 
-                    for tool_call in tool_calls:
-                        tool_name = tool_call["function"]["name"]
-                        tool_arguments = eval(tool_call["function"]["arguments"])
-                        tool_query = tool_arguments["query"]
-
-                        # Enhanced markdown formatting for tool calls
-                        tool_call_msg = (
-                            f"Searching :`{tool_name}` , Query : `{tool_query}`\n\n"
-                        )
-                        outputs.append(tool_call_msg)
-
-                else:
-                    agent_answer = message.content
-                    if agent_answer:  # Only append if there's content
-                        # Enhanced markdown formatting for agent responses
-                        formatted_answer = (
-                            f"\n\n### Research Findings\n\n"
-                            f"{agent_answer}\n\n"
-                            f"---\n\n"  # Horizontal line for visual separation
-                        )
-                        outputs.append(formatted_answer)
-
-        # Join all outputs with double newlines for better spacing
-        return "\n\n".join(outputs) if outputs else None
+        return None
 
     def query_stream(self, question: str):
+        """
+        Stream responses with immediate output
+        """
         logger.debug(f"Streaming RAG query: {question[:50]}...")
 
         if not self.rag_chain:
             raise ValueError("RAG chain not initialized. Call initialize() first.")
 
         try:
-            # First collect all information without streaming
+            # Reset the response started flag
+            self._response_started = False
+            
+            # Stream chunks directly
             for chunk in self.rag_chain.stream(
                 {"messages": [("human", question)]},
                 {"recursion_limit": RECURSION_LIMIT},
             ):
-                # Process each chunk and yield formatted outputs
-                formatted_outputs = self.process_chunks(chunk)
-                if formatted_outputs:  # Only yield if there's something to yield
-                    yield f"{formatted_outputs}\n\n"
-
-            # # Check if reached max iterations and summarize
-            # collected_info = self.extract_messages_from_agent_result(agent_result)
-            # print(f"Collected information: {collected_info}")
-            # summarization_prompt = f"""
-            # Based on the following information collected about the query: "{question}"
-
-            # {collected_info}
-
-            # Please provide a concise and accurate summary that directly answers the user's question.
-            # """
-
-            # # Stream the summarization
-            # for chunk in self.llm.stream(summarization_prompt):
-            #     yield chunk.content
+                processed_chunk = self.process_chunks(chunk)
+                if processed_chunk:
+                    yield processed_chunk
 
         except Exception as e:
             logger.error(f"Error in RAG query stream: {str(e)}", exc_info=True)
             yield f"Error generating response: {str(e)}"
+        finally:
+            # Clean up
+            if hasattr(self, '_response_started'):
+                delattr(self, '_response_started')

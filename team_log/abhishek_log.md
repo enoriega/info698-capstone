@@ -1,5 +1,3 @@
-# Create the markdown content for Abhishek's contribution log
-md_content = """# Capstone Project: Abhishek’s Contribution Log
 
 **Contributor:** Abhishek Kumar  
 **Role:** PubMed XML Processing & Vector Embedding Pipeline  
@@ -89,9 +87,4 @@ md_content = """# Capstone Project: Abhishek’s Contribution Log
 - Presented project at iShowcase event on May 7, 2025.
 """
 
-# Save to .md file
-md_file_path = "/mnt/data/Abhishek_Contribution_Log.md"
-with open(md_file_path, "w") as f:
-    f.write(md_content)
 
-md_file_path
